@@ -1,12 +1,10 @@
 #!/bin/bash
 
-# OCS AI搜题后端 - 启动脚本
-# 支持前台启动、后台启动、停止、重启等功能
-
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,42 +12,29 @@ cd "$SCRIPT_DIR"
 PID_FILE="$SCRIPT_DIR/.server.pid"
 LOG_FILE="$SCRIPT_DIR/logs/stdout.log"
 
-show_help() {
-    echo -e "${GREEN}OCS AI搜题后端 - 启动脚本${NC}"
-    echo ""
-    echo "用法: $0 [命令]"
-    echo ""
-    echo "命令:"
-    echo "  (无参数)     前台启动服务"
-    echo "  daemon, d    后台启动服务"
-    echo "  stop, s      停止服务"
-    echo "  restart, r   重启服务"
-    echo "  status, st   查看服务状态"
-    echo "  log, l       查看服务日志"
-    echo "  help, h      显示帮助信息"
-    echo ""
-    echo "示例:"
-    echo "  $0            # 前台启动"
-    echo "  $0 d          # 后台启动"
-    echo "  $0 stop       # 停止服务"
-    echo "  $0 restart    # 重启服务"
+create_shortcut() {
+    if [ ! -L "$SCRIPT_DIR/ocs" ]; then
+        ln -sf start.sh "$SCRIPT_DIR/ocs"
+        echo -e "${GREEN}✓${NC} 快捷命令 ${CYAN}ocs${NC} 已创建"
+    fi
 }
 
 check_node() {
     if ! command -v node &> /dev/null; then
-        echo -e "${RED}错误: 未找到Node.js，请先安装${NC}"
+        echo -e "${RED}✗ 错误: 未找到Node.js，请先安装${NC}"
         echo "访问 https://nodejs.org/ 下载安装"
         exit 1
     fi
-    echo -e "${GREEN}✓${NC} Node.js: $(node -v)"
-    echo -e "${GREEN}✓${NC} npm: $(npm -v)"
 }
 
 check_env() {
     if [ ! -f ".env" ]; then
-        echo ""
         echo -e "${YELLOW}提示: .env文件不存在，正在创建...${NC}"
-        cp .env.example .env 2>/dev/null || echo -e "${GREEN}✓${NC} 已创建.env文件"
+        cp .env.example .env 2>/dev/null || {
+            echo "PORT=3000" > .env
+            echo "HOST=0.0.0.0" > .env
+        }
+        echo -e "${GREEN}✓${NC} .env文件已创建"
     fi
 }
 
@@ -59,7 +44,7 @@ check_deps() {
         echo -e "${YELLOW}正在安装依赖...${NC}"
         npm install
         if [ $? -ne 0 ]; then
-            echo -e "${RED}错误: 依赖安装失败${NC}"
+            echo -e "${RED}✗ 错误: 依赖安装失败${NC}"
             exit 1
         fi
         echo -e "${GREEN}✓${NC} 依赖安装完成"
@@ -67,78 +52,77 @@ check_deps() {
 }
 
 get_pid() {
-    if [ -f "$PID_FILE" ]; then
-        cat "$PID_FILE"
-    else
-        echo ""
-    fi
+    [ -f "$PID_FILE" ] && cat "$PID_FILE"
 }
 
 is_running() {
     local pid=$(get_pid)
-    if [ -n "$pid" ] && ps -p "$pid" > /dev/null 2>&1; then
-        return 0
+    [ -n "$pid" ] && ps -p "$pid" > /dev/null 2>&1
+}
+
+show_banner() {
+    echo -e "${GREEN}"
+    echo "╔════════════════════════════════════════════╗"
+    echo "║     OCS AI搜题后端 - 服务管理脚本          ║"
+    echo "╚════════════════════════════════════════════╝"
+    echo -e "${NC}"
+}
+
+show_status() {
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    if is_running; then
+        local pid=$(get_pid)
+        local port=$(grep "^PORT=" .env 2>/dev/null | cut -d'=' -f2)
+        port=${port:-3000}
+        echo -e "${GREEN}✓${NC} 服务状态: ${GREEN}运行中${NC}"
+        echo -e "  PID: ${YELLOW}$pid${NC}"
+        echo -e "  地址: ${BLUE}http://localhost:$port${NC}"
     else
-        return 1
+        echo -e "${RED}✗${NC} 服务状态: ${RED}未运行${NC}"
     fi
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
 }
 
-start_foreground() {
-    check_node
-    check_env
-    check_deps
-
-    echo ""
-    echo -e "${GREEN}========================================${NC}"
-    echo -e "${GREEN}   前台模式启动 - 按 Ctrl+C 停止${NC}"
-    echo -e "${GREEN}========================================${NC}"
-    echo ""
-
-    mkdir -p logs
-    node src/index.js
-}
-
-start_daemon() {
-    check_node
-    check_env
-    check_deps
+start_service() {
+    local mode=$1
+    local port=$(grep "^PORT=" .env 2>/dev/null | cut -d'=' -f2)
+    port=${port:-3000}
 
     if is_running; then
         local pid=$(get_pid)
-        echo -e "${YELLOW}服务已在运行 (PID: $pid)${NC}"
-        echo "使用 '$0 stop' 停止服务"
-        exit 0
+        echo -e "${YELLOW}⚠ 服务已在运行 (PID: $pid)${NC}"
+        echo "使用选项 [2] 停止后再启动"
+        return
     fi
 
-    echo ""
-    echo -e "${GREEN}========================================${NC}"
-    echo -e "${GREEN}   后台启动服务...${NC}"
-    echo -e "${GREEN}========================================${NC}"
+    check_node
+    check_deps
 
     mkdir -p logs
-    nohup node src/index.js > "$LOG_FILE" 2>&1 &
-    SERVER_PID=$!
-    echo $SERVER_PID > "$PID_FILE"
 
-    sleep 2
+    if [ "$mode" = "background" ]; then
+        nohup node src/index.js > "$LOG_FILE" 2>&1 &
+        SERVER_PID=$!
+        echo $SERVER_PID > "$PID_FILE"
+        sleep 2
 
-    if is_running; then
-        PORT=$(grep "^PORT=" .env 2>/dev/null | cut -d'=' -f2)
-        PORT=${PORT:-3000}
-        echo -e "${GREEN}✓${NC} 服务启动成功!"
-        echo -e "${GREEN}✓${NC} 进程ID: $SERVER_PID"
-        echo ""
-        echo -e "${GREEN}========================================${NC}"
-        echo -e "${GREEN}   服务地址: http://localhost:$PORT${NC}"
-        echo -e "${GREEN}========================================${NC}"
-        echo ""
-        echo "后台运行，日志: $LOG_FILE"
-        echo "使用 '$0 stop' 停止服务"
-        echo "使用 '$0 log' 查看日志"
+        if is_running; then
+            echo ""
+            echo -e "${GREEN}✓${NC} 服务启动成功!"
+            echo -e "  ${GREEN}PID${NC}: $SERVER_PID"
+            echo -e "  ${GREEN}地址${NC}: http://localhost:$port"
+            echo ""
+            echo "后台运行中"
+            echo "使用选项 [2] 停止服务"
+        else
+            echo -e "${RED}✗ 服务启动失败${NC}"
+            echo "查看日志: $LOG_FILE"
+        fi
     else
-        echo -e "${RED}错误: 服务启动失败${NC}"
-        echo "请查看日志: $LOG_FILE"
-        exit 1
+        echo ""
+        echo -e "${GREEN}正在启动服务...${NC}"
+        node src/index.js
     fi
 }
 
@@ -166,56 +150,102 @@ restart_service() {
     echo -e "${BLUE}重启服务...${NC}"
     stop_service
     sleep 1
-    start_daemon
-}
-
-show_status() {
-    if is_running; then
-        local pid=$(get_pid)
-        PORT=$(grep "^PORT=" .env 2>/dev/null | cut -d'=' -f2)
-        PORT=${PORT:-3000}
-        echo -e "${GREEN}✓${NC} 服务运行中 (PID: $pid)"
-        echo -e "${GREEN}   地址: http://localhost:$PORT${NC}"
-    else
-        echo -e "${RED}✗${NC} 服务未运行"
-        echo "使用 '$0 d' 启动服务"
-    fi
+    start_service "background"
 }
 
 show_log() {
     if [ -f "$LOG_FILE" ]; then
+        echo -e "${CYAN}━━━ 最近50行日志 ━━━${NC}"
         tail -50 "$LOG_FILE"
     else
         echo -e "${YELLOW}日志文件不存在${NC}"
     fi
 }
 
-case "${1:-}" in
-    daemon|d)
-        start_daemon
-        ;;
-    stop|s)
-        stop_service
-        ;;
-    restart|r)
-        restart_service
-        ;;
-    status|st)
-        show_status
-        ;;
-    log|l)
-        show_log
-        ;;
-    help|h|"")
-        if [ -z "$1" ]; then
-            start_foreground
-        else
-            show_help
-        fi
-        ;;
-    *)
-        echo -e "${RED}未知命令: $1${NC}"
-        show_help
-        exit 1
-        ;;
-esac
+show_menu() {
+    echo -e "${CYAN}请选择操作:${NC}"
+    echo ""
+    echo -e "  ${GREEN}[1]${NC} 启动服务 (后台运行)"
+    echo -e "  ${GREEN}[2]${NC} 停止服务"
+    echo -e "  ${GREEN}[3]${NC} 重启服务"
+    echo -e "  ${GREEN}[4]${NC} 查看状态"
+    echo -e "  ${GREEN}[5]${NC} 查看日志"
+    echo -e "  ${GREEN}[6]${NC} 前台运行 (调试模式)"
+    echo -e "  ${RED}[0]${NC} 退出"
+    echo ""
+    echo -n "请输入选项: "
+}
+
+main() {
+    create_shortcut
+    show_banner
+    show_status
+
+    if [ -n "$1" ]; then
+        case "$1" in
+            1|d|daemon)
+                start_service "background"
+                ;;
+            2|s|stop)
+                stop_service
+                ;;
+            3|r|restart)
+                restart_service
+                ;;
+            4|st|status)
+                show_status
+                ;;
+            5|l|log)
+                show_log
+                ;;
+            6|f|foreground)
+                start_service "foreground"
+                ;;
+            0|q|quit)
+                echo "再见!"
+                exit 0
+                ;;
+            *)
+                echo -e "${RED}未知选项: $1${NC}"
+                ;;
+        esac
+        return
+    fi
+
+    while true; do
+        show_menu
+        read choice
+
+        case "$choice" in
+            1|d|daemon|"")
+                start_service "background"
+                ;;
+            2|s|stop)
+                stop_service
+                ;;
+            3|r|restart)
+                restart_service
+                ;;
+            4|st|status)
+                show_status
+                ;;
+            5|l|log)
+                show_log
+                ;;
+            6|f|foreground)
+                start_service "foreground"
+                ;;
+            0|q|quit)
+                echo "再见!"
+                exit 0
+                ;;
+            *)
+                echo -e "${RED}无效选项，请重试${NC}"
+                ;;
+        esac
+
+        echo ""
+    done
+}
+
+main "$@"
