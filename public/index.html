@@ -1854,24 +1854,39 @@
         function regenerateCode() {
             const apiBaseUrl = window.location.origin || 'http://localhost:3000';
 
-            const configCode = `{
-  url: "${apiBaseUrl}/api/search",
-  name: "AI智能搜题",
-  homepage: "${apiBaseUrl}",
-  method: "get",
-  contentType: "json",
-  data: {
-    title: "\\${title}",
-    options: "\\${options}",
-    type: "\\${type}"
-  },
-  handler: \`return (res) => {
-    if (res.code === 1 && res.results && res.results.length > 0) {
-      return [res.results[0].question, res.results[0].answer];
-    }
-    return undefined;
-  }\`
-}`;
+            const configCode = `// ==UserScript==
+// @name         OCS AI智能搜题配置
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  AI智能搜题
+// @author       OCS
+// @match        *://*/*
+// @connect      ${window.location.hostname}
+// @grant        unsafeWindow
+// @run-at       document-idle
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // 题库配置
+    window.OCSAnswererWrapper = [{
+        url: "${apiBaseUrl}/api/search",
+        name: "AI智能搜题",
+        homepage: "${apiBaseUrl}",
+        method: "get",
+        contentType: "json",
+        type: "GM_xmlhttpRequest",
+        data: {
+            title: "\${title}",
+            options: "\${options}",
+            type: "\${type}"
+        },
+        handler: "return (res) => { if (res.code === 1 && res.results && res.results.length > 0) { return [res.results[0].question, res.results[0].answer]; } return undefined; }"
+    }];
+
+    console.log('OCS AI搜题配置已加载');
+})();`;
 
             document.getElementById('ocsConfig').textContent = configCode;
             showToast('配置代码已重新生成', 'info');
@@ -1880,11 +1895,11 @@
         // Download config
         function downloadConfig() {
             const code = document.getElementById('ocsConfig').textContent;
-            const blob = new Blob([code], { type: 'application/javascript' });
+            const blob = new Blob([code], { type: 'text/javascript' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'ocs-ai-config.js';
+            a.download = 'ocs-ai-config.user.js';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
