@@ -1133,32 +1133,27 @@
                         <button class="btn-icon" onclick="copyCode()" title="复制代码">📋</button>
                         <button class="btn-icon" onclick="regenerateCode()" title="重新生成">🔄</button>
                     </div>
-                    <pre id="ocsConfig">{
-  url: "http://localhost:3000/api/search",
-  name: "AI智能搜题",
-  homepage: "http://localhost:3000",
-  method: "get",
-  contentType: "json",
-  data: {
-    title: "${title}",
-    options: "${options}",
-    type: "${type}"
-  },
-  handler: \`return (res) => {
-    if (res.code === 1 && res.results && res.results.length > 0) {
-      return [res.results[0].question, res.results[0].answer];
+                    <pre id="ocsConfig">[
+    {
+        "name": "AI智能搜题",
+        "homepage": "http://localhost:3000",
+        "url": "http://localhost:3000/api/search",
+        "method": "get",
+        "type": "GM_xmlhttpRequest",
+        "contentType": "json",
+        "data": {
+            "title": "${title}",
+            "options": "${options}",
+            "type": "${type}"
+        },
+        "handler": "return (res)=> res.code === 1 ? [res.results[0].question, res.results[0].answer] : undefined"
     }
-    return undefined;
-  }\`
-}</pre>
+]</pre>
                 </div>
 
                 <div class="btn-group">
                     <button class="btn btn-primary" onclick="copyCode()">
                         <span>📋</span> 复制配置代码
-                    </button>
-                    <button class="btn btn-secondary" onclick="downloadConfig()">
-                        <span>💾</span> 下载配置文件
                     </button>
                 </div>
             </div>
@@ -1850,7 +1845,7 @@
             });
         }
 
-        // Regenerate code
+        // Update config with current URL
         function regenerateCode() {
             const apiBaseUrl = window.location.origin || 'http://localhost:3000';
 
@@ -1870,22 +1865,7 @@
             }], null, 4);
 
             document.getElementById('ocsConfig').textContent = configCode;
-            showToast('配置代码已重新生成', 'info');
-        }
-
-        // Download config
-        function downloadConfig() {
-            const code = document.getElementById('ocsConfig').textContent;
-            const blob = new Blob([code], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ocs-ai-config.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('配置文件已下载', 'success');
+            showToast('配置已更新为当前服务地址', 'info');
         }
 
         // Toggle accordion
