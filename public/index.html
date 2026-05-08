@@ -1094,8 +1094,7 @@
                 <div class="form-group">
                     <label class="form-label">请求方式</label>
                     <select class="form-select" id="requestMethod">
-                        <option value="get">GET</option>
-                        <option value="post">POST</option>
+                        <option value="post" selected>POST</option>
                     </select>
                 </div>
 
@@ -1137,8 +1136,8 @@
     {
         "name": "AI智能搜题",
         "homepage": "http://localhost:3000",
-        "url": "http://localhost:3000/api/search",
-        "method": "get",
+        "url": "http://localhost:3000/api/answer",
+        "method": "post",
         "type": "GM_xmlhttpRequest",
         "contentType": "json",
         "data": {
@@ -1146,7 +1145,7 @@
             "options": "${options}",
             "type": "${type}"
         },
-        "handler": "return (res)=> res.code === 1 ? [res.results[0].question, res.results[0].answer] : undefined"
+        "handler": "return (res)=> res.code === 1 ? [res.question, res.answer] : undefined"
     }
 ]</pre>
                 </div>
@@ -1896,12 +1895,13 @@
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             const themeIcon = document.getElementById('themeIcon');
-            
-            if (savedTheme === 'light') {
+
+            if (savedTheme === 'dark') {
+                document.body.classList.remove('light-theme');
+                themeIcon.textContent = '🌙';
+            } else {
                 document.body.classList.add('light-theme');
                 themeIcon.textContent = '☀️';
-            } else {
-                themeIcon.textContent = '🌙';
             }
         }
 
