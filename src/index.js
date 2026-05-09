@@ -16,6 +16,23 @@ const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
 app.use(cors());
+
+app.use((req, res, next) => {
+  const contentType = req.headers['content-type'];
+  console.log(`🔍 请求类型: ${req.method} ${req.path}`);
+  console.log(`🔍 Content-Type: ${contentType}`);
+  
+  let rawData = '';
+  req.on('data', (chunk) => {
+    rawData += chunk;
+  });
+  req.on('end', () => {
+    console.log(`🔍 原始请求体: ${rawData.substring(0, 500)}${rawData.length > 500 ? '...' : ''}`);
+  });
+  
+  next();
+});
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(join(__dirname, '../public')));
