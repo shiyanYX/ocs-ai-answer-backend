@@ -1170,47 +1170,54 @@
                 <h3 class="help-title">❓ 使用帮助</h3>
 
                 <div class="accordion">
-                    <div class="accordion-item">
+                    <div class="accordion-item active">
                         <div class="accordion-header" onclick="toggleAccordion(this)">
                             <span class="accordion-title">🚀 快速开始</span>
                             <span class="accordion-icon">▼</span>
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body help-content">
-                                <h4>步骤 1: 配置 API</h4>
-                                <p>在左侧"API 配置"区域填入你的 OpenAI API Key 和 Base URL。</p>
+                                <h4>步骤 1: 添加配置</h4>
+                                <p>点击左上角「新增配置」按钮，填写 AI 提供商的 API 信息。</p>
                                 
-                                <h4>步骤 2: 测试功能</h4>
-                                <p>在"API 测试工具"中输入一道题目，点击"发送测试请求"验证配置是否正确。</p>
+                                <h4>步骤 2: 选择模型</h4>
+                                <p>点击「获取模型列表」，从下拉菜单中选择要使用的模型，然后保存。</p>
                                 
-                                <h4>步骤 3: 复制配置</h4>
-                                <p>将生成的"OCS 题库配置代码"复制到 OCS 刷题脚本的题库配置中。</p>
+                                <h4>步骤 3: 启用配置</h4>
+                                <p>在配置列表中找到刚保存的配置，点击 ✓ 按钮启用。启用后外部 API 调用将自动使用此配置。</p>
                                 
-                                <h4>步骤 4: 开始使用</h4>
-                                <p>在 OCS 脚本中启用题库配置，开始自动答题！</p>
+                                <h4>步骤 4: 配置 OCS</h4>
+                                <p>在下方「OCS 题库配置代码」区域填入服务器地址，点击复制，然后添加到 OCS 刷题脚本中。</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="accordion-item">
                         <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">🔧 API 配置说明</span>
+                            <span class="accordion-title">🤖 支持的 AI 提供商</span>
                             <span class="accordion-icon">▼</span>
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body help-content">
-                                <h4>API Key</h4>
-                                <p>从 OpenAI 平台获取的 API 密钥，格式类似 <code>sk-xxxxxxxxxxxxxxxx</code></p>
-                                
-                                <h4>API Base URL</h4>
-                                <p>OpenAI API 地址，默认是 <code>https://api.openai.com/v1</code></p>
-                                <p>如果使用代理或第三方 API，填入对应的地址即可。</p>
-                                
-                                <h4>支持的模型</h4>
+                                <h4>DeepSeek</h4>
                                 <ul>
-                                    <li>GPT-3.5 Turbo - 快速、便宜、效果好</li>
-                                    <li>GPT-4 - 更强能力、更高成本</li>
-                                    <li>GPT-4 Turbo - 平衡性能和成本</li>
+                                    <li>Base URL: <code>https://api.deepseek.com</code></li>
+                                    <li>推荐模型: deepseek-v4-flash（高性价比）</li>
+                                    <li>适用场景: 通用问答、刷题</li>
+                                </ul>
+                                
+                                <h4>阿里云百炼</h4>
+                                <ul>
+                                    <li>Base URL: <code>https://dashscope.aliyuncs.com/compatible-mode/v1</code></li>
+                                    <li>推荐模型: qwen-plus、qwen-turbo</li>
+                                    <li>适用场景: 中文问答、代码</li>
+                                </ul>
+                                
+                                <h4>OpenAI</h4>
+                                <ul>
+                                    <li>Base URL: <code>https://api.openai.com/v1</code></li>
+                                    <li>推荐模型: gpt-4o-mini</li>
+                                    <li>适用场景: 通用问答</li>
                                 </ul>
                             </div>
                         </div>
@@ -1218,27 +1225,42 @@
 
                     <div class="accordion-item">
                         <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">📝 OCS 配置说明</span>
+                            <span class="accordion-title">🔧 配置管理说明</span>
                             <span class="accordion-icon">▼</span>
                         </div>
                         <div class="accordion-content">
                             <div class="accordion-body help-content">
-                                <h4>配置字段说明</h4>
-                                <ul>
-                                    <li><code>url</code> - 搜题接口地址</li>
-                                    <li><code>name</code> - 题库名称（显示在脚本中）</li>
-                                    <li><code>homepage</code> - 题库首页</li>
-                                    <li><code>method</code> - 请求方法（get/post）</li>
-                                    <li><code>contentType</code> - 响应数据格式</li>
-                                    <li><code>data</code> - 发送到接口的参数</li>
-                                    <li><code>handler</code> - 处理响应数据的函数</li>
-                                </ul>
+                                <h4>启用 vs 非启用</h4>
+                                <p>可以添加多个配置，但在任意时刻只能有一个配置处于「已启用」状态。</p>
+                                <p>启用后的配置会被外部 API 调用自动使用，无需每次传递参数。</p>
                                 
-                                <h4>占位符说明</h4>
+                                <h4>测试延迟</h4>
+                                <p>选择配置后点击「测试延迟」按钮，可以检查 API 连接状态和响应速度。</p>
+                                
+                                <h4>删除配置</h4>
+                                <p>点击配置项右侧的 🗑️ 按钮删除配置。删除后需要重新添加。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion(this)">
+                            <span class="accordion-title">📋 OCS 配置说明</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body help-content">
+                                <h4>服务器地址</h4>
+                                <p>在 OCS 题库配置代码区域填入你的服务器地址，格式如：<code>http://103.39.66.30:45419</code></p>
+                                
+                                <h4>请求方法</h4>
+                                <p>推荐使用 <code>POST</code> 请求，数据放在请求体中传输。</p>
+                                
+                                <h4>handler 函数</h4>
+                                <p>handler 负责解析 API 响应：</p>
                                 <ul>
-                                    <li><code>${'{title}'}</code> - 题目标题</li>
-                                    <li><code>${'{options}'}</code> - 题目选项</li>
-                                    <li><code>${'{type}'}</code> - 题目类型</li>
+                                    <li><code>res.code === 1</code> 表示成功</li>
+                                    <li>返回 <code>[res.title, res.answer]</code> 格式</li>
                                 </ul>
                             </div>
                         </div>
@@ -1252,16 +1274,16 @@
                         <div class="accordion-content">
                             <div class="accordion-body help-content">
                                 <h4>Q: AI 功能不可用？</h4>
-                                <p>A: 检查 API Key 是否正确配置，确保网络可以访问 OpenAI。</p>
+                                <p>A: 检查是否已启用配置（列表中显示「已启用」标签）。</p>
                                 
                                 <h4>Q: 请求超时？</h4>
-                                <p>A: AI 生成答案需要几秒钟，请耐心等待。也可以检查网络连接。</p>
+                                <p>A: AI 生成答案需要几秒钟，请耐心等待。检查网络连接。</p>
                                 
-                                <h4>Q: 如何部署后端？</h4>
-                                <p>A: 可以使用 Docker、PM2 或直接部署。详细说明请查看项目 README。</p>
+                                <h4>Q: 如何更新服务器？</h4>
+                                <p>A: <code>git pull</code> 后重启服务即可。</p>
                                 
-                                <h4>Q: 支持其他 AI 吗？</h4>
-                                <p>A: 支持任何兼容 OpenAI API 格式的服务，如 Azure OpenAI、LocalAI 等。</p>
+                                <h4>Q: 配置数据保存在哪？</h4>
+                                <p>A: 配置保存在 <code>data/configs.json</code> 文件中，重启服务后数据保留。</p>
                             </div>
                         </div>
                     </div>
