@@ -16,8 +16,8 @@ const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '0.0.0.0';
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(join(__dirname, '../public')));
 
 let openai = null;
@@ -157,7 +157,11 @@ app.post('/api/answer', async (req, res) => {
     const apiKey = body.apiKey || body.key || body.token || '';
     const model = body.model || body.aiModel || body.engine || '';
     
-    console.log(`📥 POST请求: title=${title?.substring(0, 50)}...`);
+    const rawBody = JSON.stringify(body);
+    console.log(`📥 POST请求 - 内容长度: ${rawBody.length} bytes`);
+    console.log(`📥 POST请求 - 完整body: ${rawBody.substring(0, 200)}${rawBody.length > 200 ? '...' : ''}`);
+    console.log(`📋 title参数长度: ${title.length}, 值: ${title.substring(0, 100)}${title.length > 100 ? '...' : ''}`);
+    console.log(`📋 options参数长度: ${options.length}`);
     console.log(`📋 外部传入配置: baseUrl=${baseUrl?.substring(0, 60) || '无'}, model=${model || '无'}`);
     console.log(`📋 服务器状态: enabledConfigId=${enabledConfigId}, configStorage.length=${configStorage.length}`);
     
