@@ -149,7 +149,13 @@ async function safeJsonParse(response) {
 
 app.post('/api/answer', async (req, res) => {
   try {
-    const { title, options, type, baseUrl, apiKey, model } = req.body;
+    const body = req.body;
+    const title = body.title || body.question || body.query || '';
+    const options = body.options || body.choices || body.items || '';
+    const type = body.type || body.questionType || body.category || '';
+    const baseUrl = body.baseUrl || body.apiUrl || body.url || '';
+    const apiKey = body.apiKey || body.key || body.token || '';
+    const model = body.model || body.aiModel || body.engine || '';
     
     console.log(`📥 POST请求: title=${title?.substring(0, 50)}...`);
     console.log(`📋 动态配置: baseUrl=${baseUrl?.substring(0, 60) || '无'}, model=${model || '无'}`);
