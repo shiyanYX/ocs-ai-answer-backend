@@ -158,7 +158,8 @@ app.post('/api/answer', async (req, res) => {
     const model = body.model || body.aiModel || body.engine || '';
     
     console.log(`📥 POST请求: title=${title?.substring(0, 50)}...`);
-    console.log(`📋 动态配置: baseUrl=${baseUrl?.substring(0, 60) || '无'}, model=${model || '无'}`);
+    console.log(`📋 外部传入配置: baseUrl=${baseUrl?.substring(0, 60) || '无'}, model=${model || '无'}`);
+    console.log(`📋 服务器状态: enabledConfigId=${enabledConfigId}, configStorage.length=${configStorage.length}`);
     
     if (!title) {
       return res.json({
@@ -173,14 +174,19 @@ app.post('/api/answer', async (req, res) => {
     let effectiveModel = model;
     
     if (!effectiveBaseUrl || !effectiveApiKey || !effectiveModel) {
+      console.log(`⚠️ 未提供外部配置，尝试使用启用配置...`);
       if (enabledConfigId) {
         const enabledConfig = configStorage.find(c => c.id === enabledConfigId);
         if (enabledConfig) {
           effectiveBaseUrl = enabledConfig.baseUrl;
           effectiveApiKey = enabledConfig.apiKey;
           effectiveModel = enabledConfig.model;
-          console.log(`📡 使用启用的配置: ${enabledConfig.name} (${effectiveModel})`);
+          console.log(`✅ 成功使用启用配置: ${enabledConfig.name} (${effectiveModel})`);
+        } else {
+          console.log(`❌ 启用配置 ${enabledConfigId} 在列表中不存在！`);
         }
+      } else {
+        console.log(`❌ 没有启用的配置！`);
       }
     }
     
