@@ -21,26 +21,10 @@ app.use((req, res, next) => {
   const contentType = req.headers['content-type'] || '';
   console.log(`🔍 请求类型: ${req.method} ${req.path}`);
   console.log(`🔍 Content-Type: ${contentType}`);
-  
-  if (contentType.includes('text/plain')) {
-    let rawData = '';
-    req.on('data', (chunk) => {
-      rawData += chunk;
-    });
-    req.on('end', () => {
-      console.log(`🔍 原始请求体(text/plain): ${rawData.substring(0, 500)}${rawData.length > 500 ? '...' : ''}`);
-      try {
-        req.body = JSON.parse(rawData);
-        console.log(`🔍 text/plain JSON解析成功`);
-      } catch (e) {
-        console.log(`🔍 text/plain JSON解析失败`);
-      }
-    });
-  }
-  
   next();
 });
 
+app.use(express.text({ type: 'text/plain', limit: '10mb' }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(join(__dirname, '../public')));
@@ -175,12 +159,36 @@ async function safeJsonParse(response) {
 app.post('/api/answer', async (req, res) => {
   try {
     const body = req.body;
-    const title = body.title || body.Title || body.question || body.query || '';
-    const options = body.options || body.choices || body.items || '';
-    const type = body.type || body.questionType || body.category || '';
-    const baseUrl = body.baseUrl || body.apiUrl || body.url || '';
-    const apiKey = body.apiKey || body.key || body.token || '';
-    const model = body.model || body.aiModel || body.engine || '';
+    let title = '';
+    let options = '';
+    let type = '';
+    let baseUrl = '';
+    let apiKey = '';
+    let model = '';
+
+    if (typeof body === 'string') {
+      try {
+        const parsed = JSON.parse(body);
+        title = parsed.title || parsed.Title || parsed.question || parsed.query || '';
+        options = parsed.options || parsed.choices || parsed.items || '';
+        type = parsed.type || parsed.questionType || parsed.category || '';
+        baseUrl = parsed.baseUrl || parsed.apiUrl || parsed.url || '';
+        apiKey = parsed.apiKey || parsed.key || parsed.token || '';
+        model = parsed.model || parsed.aiModel || parsed.engine || '';
+      } catch (e) {
+        return res.json({
+          code: 0,
+          msg: '请求体JSON解析失败'
+        });
+      }
+    } else {
+      title = body.title || body.Title || body.question || body.query || '';
+      options = body.options || body.choices || body.items || '';
+      type = body.type || body.questionType || body.category || '';
+      baseUrl = body.baseUrl || body.apiUrl || body.url || '';
+      apiKey = body.apiKey || body.key || body.token || '';
+      model = body.model || body.aiModel || body.engine || '';
+    }
     
     const rawBody = JSON.stringify(body);
     console.log(`📥 POST请求 - 内容长度: ${rawBody.length} bytes`);
