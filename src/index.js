@@ -18,17 +18,25 @@ const HOST = process.env.HOST || '0.0.0.0';
 app.use(cors());
 
 app.use((req, res, next) => {
-  const contentType = req.headers['content-type'];
+  const contentType = req.headers['content-type'] || '';
   console.log(`🔍 请求类型: ${req.method} ${req.path}`);
   console.log(`🔍 Content-Type: ${contentType}`);
   
-  let rawData = '';
-  req.on('data', (chunk) => {
-    rawData += chunk;
-  });
-  req.on('end', () => {
-    console.log(`🔍 原始请求体: ${rawData.substring(0, 500)}${rawData.length > 500 ? '...' : ''}`);
-  });
+  if (contentType.includes('text/plain')) {
+    let rawData = '';
+    req.on('data', (chunk) => {
+      rawData += chunk;
+    });
+    req.on('end', () => {
+      console.log(`🔍 原始请求体(text/plain): ${rawData.substring(0, 500)}${rawData.length > 500 ? '...' : ''}`);
+      try {
+        req.body = JSON.parse(rawData);
+        console.log(`🔍 text/plain JSON解析成功`);
+      } catch (e) {
+        console.log(`🔍 text/plain JSON解析失败`);
+      }
+    });
+  }
   
   next();
 });
