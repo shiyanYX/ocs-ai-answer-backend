@@ -17,6 +17,7 @@ const HOST = process.env.HOST || '0.0.0.0';
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(join(__dirname, '../public')));
 
 let openai = null;
@@ -151,7 +152,7 @@ app.post('/api/answer', async (req, res) => {
     const { title, options, type, baseUrl, apiKey, model } = req.body;
     
     console.log(`📥 POST请求: title=${title?.substring(0, 50)}...`);
-    console.log(`📋 配置: baseUrl=${baseUrl?.substring(0, 60)} model=${model}`);
+    console.log(`📋 动态配置: baseUrl=${baseUrl?.substring(0, 60) || '无'}, model=${model || '无'}`);
     
     if (!title) {
       return res.json({
@@ -161,9 +162,24 @@ app.post('/api/answer', async (req, res) => {
     }
 
     let answer;
+    let effectiveBaseUrl = baseUrl;
+    let effectiveApiKey = apiKey;
+    let effectiveModel = model;
     
-    if (baseUrl && apiKey && model) {
-      console.log(`📡 使用动态配置: ${model} @ ${baseUrl}`);
+    if (!effectiveBaseUrl || !effectiveApiKey || !effectiveModel) {
+      if (enabledConfigId) {
+        const enabledConfig = configStorage.find(c => c.id === enabledConfigId);
+        if (enabledConfig) {
+          effectiveBaseUrl = enabledConfig.baseUrl;
+          effectiveApiKey = enabledConfig.apiKey;
+          effectiveModel = enabledConfig.model;
+          console.log(`📡 使用启用的配置: ${enabledConfig.name} (${effectiveModel})`);
+        }
+      }
+    }
+    
+    if (effectiveBaseUrl && effectiveApiKey && effectiveModel) {
+      console.log(`📡 使用动态配置: ${effectiveModel} @ ${effectiveBaseUrl}`);
 
       const systemPrompt = generateSystemPrompt(type);
       const userContent = `题目：${title}${options ? '\n\n选项：\n' + options : ''}`;
@@ -176,7 +192,7 @@ app.post('/api/answer', async (req, res) => {
         try {
           console.log(`🔄 第${attempt}次尝试...`);
 
-          const chatUrl = baseUrl.replace(/\/$/, '') + '/chat/completions';
+          const chatUrl = effectiveBaseUrl.replace(/\/$/, '') + '/chat/completions';
           console.log(`📡 请求URL: ${chatUrl}`);
 
           const controller = new AbortController();
@@ -185,11 +201,11 @@ app.post('/api/answer', async (req, res) => {
           const response = await fetch(chatUrl, {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${apiKey}`,
+              'Authorization': `Bearer ${effectiveApiKey}`,
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              model: model,
+              model: effectiveModel,
               messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userContent }
@@ -287,35 +303,113 @@ app.get('/api/answer', async (req, res) => {
     }
 
     let answer;
+    let effectiveBaseUrl = baseUrl;
+    let effectiveApiKey = apiKey;
+    let effectiveModel = model;
     
-    if (baseUrl && apiKey && model) {
-      const dynamicOpenAI = new OpenAI({
-        apiKey: apiKey,
-        baseURL: baseUrl
-      });
-      
+    if (!effectiveBaseUrl || !effectiveApiKey || !effectiveModel) {
+      if (enabledConfigId) {
+        const enabledConfig = configStorage.find(c => c.id === enabledConfigId);
+        if (enabledConfig) {
+          effectiveBaseUrl = enabledConfig.baseUrl;
+          effectiveApiKey = enabledConfig.apiKey;
+          effectiveModel = enabledConfig.model;
+          console.log(`📡 GET使用启用的配置: ${enabledConfig.name} (${effectiveModel})`);
+        }
+      }
+    }
+    
+    if (effectiveBaseUrl && effectiveApiKey && effectiveModel) {
+      console.log(`📡 GET使用动态配置: ${effectiveModel} @ ${effectiveBaseUrl}`);
+
       const systemPrompt = generateSystemPrompt(type);
       const userContent = `题目：${title}${options ? '\n\n选项：\n' + options : ''}`;
-      
-      const response = await dynamicOpenAI.chat.completions.create({
-        model: model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userContent }
-        ],
-        temperature: 0.3,
-        max_tokens: 500
-      });
-      
-      answer = response.choices[0]?.message?.content?.trim();
+
+      let lastError = null;
+
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          console.log(`🔄 GET第${attempt}次尝试...`);
+
+          const chatUrl = effectiveBaseUrl.replace(/\/$/, '') + '/chat/completions';
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+          const response = await fetch(chatUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${effectiveApiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: effectiveModel,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userContent }
+              ],
+              temperature: 0.3,
+              max_tokens: 500
+            }),
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            try {
+              const errorJson = JSON.parse(errorText);
+              throw new Error(errorJson.error?.message || errorJson.message || `HTTP ${response.status}`);
+            } catch (parseError) {
+              if (parseError.message.startsWith('HTTP')) {
+                throw parseError;
+              }
+              throw new Error(`API错误: ${errorText.substring(0, 200)}`);
+            }
+          }
+
+          const data = await response.json();
+          answer = data.choices?.[0]?.message?.content?.trim();
+
+          if (!answer) {
+            throw new Error('AI未返回有效答案');
+          }
+
+          console.log(`✅ GET AI响应成功: ${answer?.substring(0, 50)}...`);
+          break;
+        } catch (apiError) {
+          lastError = apiError;
+          console.error(`❌ GET第${attempt}次尝试失败:`, apiError.message);
+
+          if (attempt < 2 && (
+            apiError.name === 'AbortError' ||
+            apiError.message.includes('timeout') ||
+            apiError.message.includes('upstream') ||
+            apiError.message.includes('ETIMEDOUT') ||
+            apiError.message.includes('ECONNRESET')
+          )) {
+            console.log(`⏳ 等待2秒后重试...`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            continue;
+          }
+
+          if (attempt === 2) {
+            throw new Error(apiError.message);
+          }
+        }
+      }
+
+      if (!answer && lastError) {
+        throw lastError;
+      }
     } else if (openai) {
       answer = await generateAnswer(title, options || '', type || '');
     } else {
       throw new Error('AI服务未初始化，请先配置API');
     }
-    
-    console.log(`✅ GET请求生成答案: ${answer}`);
-    
+
+    console.log(`✅ GET请求生成答案: ${answer?.substring(0, 50)}...`);
+
     res.json({
       code: 1,
       results: [
@@ -325,7 +419,7 @@ app.get('/api/answer', async (req, res) => {
         }
       ]
     });
-    
+
   } catch (error) {
     console.error('❌ GET搜题失败:', error.message);
     res.json({
@@ -758,6 +852,7 @@ app.use((err, req, res, next) => {
 });
 
 const CONFIG_FILE = join(__dirname, '../data/configs.json');
+const ENABLED_CONFIG_FILE = join(__dirname, '../data/enabled-config.json');
 
 function ensureDataDir() {
   const dataDir = join(__dirname, '../data');
@@ -790,14 +885,61 @@ function saveConfigs(configs) {
   }
 }
 
+function loadEnabledConfigId() {
+  try {
+    if (fs.existsSync(ENABLED_CONFIG_FILE)) {
+      const data = JSON.parse(fs.readFileSync(ENABLED_CONFIG_FILE, 'utf-8'));
+      return data.enabledConfigId || null;
+    }
+  } catch (error) {
+    console.error('❌ 加载启用配置失败:', error.message);
+  }
+  return null;
+}
+
+function saveEnabledConfigId(id) {
+  try {
+    fs.writeFileSync(ENABLED_CONFIG_FILE, JSON.stringify({ enabledConfigId: id }), 'utf-8');
+    return true;
+  } catch (error) {
+    console.error('❌ 保存启用配置失败:', error.message);
+    return false;
+  }
+}
+
 let configStorage = loadConfigs();
+let enabledConfigId = loadEnabledConfigId();
 console.log(`📦 已加载 ${configStorage.length} 个配置`);
+console.log(`📦 启用的配置: ${enabledConfigId || '无'}`);
 
 app.get('/api/configs', (req, res) => {
   res.json({
     code: 1,
     configs: configStorage
   });
+});
+
+app.get('/api/configs/enabled', (req, res) => {
+  if (!enabledConfigId) {
+    return res.json({
+      code: 0,
+      msg: '没有启用的配置'
+    });
+  }
+  
+  const config = configStorage.find(c => c.id === enabledConfigId);
+  
+  if (config) {
+    res.json({
+      code: 1,
+      config
+    });
+  } else {
+    return res.json({
+      code: 0,
+      msg: '启用的配置不存在'
+    });
+  }
 });
 
 app.post('/api/configs', (req, res) => {
@@ -840,6 +982,66 @@ app.get('/api/configs/:id', (req, res) => {
     res.json({
       code: 0,
       msg: '配置不存在'
+    });
+  }
+});
+
+app.post('/api/configs/:id/enable', (req, res) => {
+  const config = configStorage.find(c => c.id === req.params.id);
+  
+  if (!config) {
+    return res.json({
+      code: 0,
+      msg: '配置不存在'
+    });
+  }
+  
+  enabledConfigId = req.params.id;
+  
+  if (saveEnabledConfigId(enabledConfigId)) {
+    console.log(`✅ 已启用配置: ${config.name} (${config.model})`);
+    res.json({
+      code: 1,
+      msg: '配置已启用',
+      config
+    });
+  } else {
+    res.json({
+      code: 0,
+      msg: '启用配置保存失败'
+    });
+  }
+});
+
+app.post('/api/configs/:id/disable', (req, res) => {
+  const config = configStorage.find(c => c.id === req.params.id);
+  
+  if (!config) {
+    return res.json({
+      code: 0,
+      msg: '配置不存在'
+    });
+  }
+  
+  if (enabledConfigId !== req.params.id) {
+    return res.json({
+      code: 0,
+      msg: '该配置未启用'
+    });
+  }
+  
+  enabledConfigId = null;
+  
+  if (saveEnabledConfigId(null)) {
+    console.log(`✅ 已禁用配置: ${config.name}`);
+    res.json({
+      code: 1,
+      msg: '配置已禁用'
+    });
+  } else {
+    res.json({
+      code: 0,
+      msg: '禁用配置保存失败'
     });
   }
 });

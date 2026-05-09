@@ -1286,6 +1286,9 @@
         // Currently selected config ID
         let selectedConfigId = null;
         
+        // Currently enabled config ID
+        let enabledConfigId = null;
+        
         // Global error handler
         window.addEventListener('error', function(e) {
             console.error('❌ 全局错误:', e.message, 'at', e.filename, 'line', e.lineno);
@@ -1320,9 +1323,78 @@
                     console.log('📦 渲染配置列表，数量:', data.configs.length);
                     renderConfigList(data.configs);
                     updateTestConfigSelect(data.configs);
+                    
+                    // 加载启用的配置
+                    await loadEnabledConfig();
                 }
             } catch (error) {
                 console.error('❌ 加载配置列表失败:', error);
+            }
+        }
+        
+        async function loadEnabledConfig() {
+            try {
+                const response = await fetch('/api/configs/enabled');
+                const data = await response.json();
+                if (data.code === 1 && data.config) {
+                    window.enabledConfigId = data.config.id;
+                    enabledConfigId = data.config.id;
+                    console.log(`📦 已启用配置: ${data.config.name}`);
+                    // 重新渲染列表以显示启用状态
+                    const configs = await fetch('/api/configs').then(r => r.json());
+                    if (configs.code === 1) {
+                        renderConfigList(configs.configs);
+                    }
+                } else {
+                    window.enabledConfigId = null;
+                    enabledConfigId = null;
+                }
+            } catch (error) {
+                console.error('❌ 加载启用配置失败:', error);
+            }
+        }
+        
+        async function enableConfig(id) {
+            try {
+                const response = await fetch(`/api/configs/${id}/enable`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.code === 1) {
+                    showToast(`已启用配置: ${data.config.name}`, 'success');
+                    window.enabledConfigId = id;
+                    enabledConfigId = id;
+                    // 重新渲染列表
+                    await loadConfigs();
+                } else {
+                    showToast(data.msg || '启用失败', 'error');
+                }
+            } catch (error) {
+                console.error('❌ 启用配置失败:', error);
+                showToast('启用配置失败', 'error');
+            }
+        }
+        
+        async function disableConfig(id) {
+            try {
+                const response = await fetch(`/api/configs/${id}/disable`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.code === 1) {
+                    showToast('已禁用配置', 'success');
+                    window.enabledConfigId = null;
+                    enabledConfigId = null;
+                    // 重新渲染列表
+                    await loadConfigs();
+                } else {
+                    showToast(data.msg || '禁用失败', 'error');
+                }
+            } catch (error) {
+                console.error('❌ 禁用配置失败:', error);
+                showToast('禁用配置失败', 'error');
             }
         }
         
@@ -1365,14 +1437,21 @@
             container.innerHTML = configs.map(cfg => {
                 const icon = getProviderIcon(cfg.baseUrl);
                 const bgColor = getProviderColor(cfg.baseUrl);
+                const isEnabled = cfg.id === window.enabledConfigId;
                 return `
                     <div class="config-item ${selectedConfigId === cfg.id ? 'active' : ''}" onclick="selectConfig('${cfg.id}')">
                         <div class="config-item-icon" style="background: ${bgColor}">${icon}</div>
                         <div class="config-item-info">
-                            <div class="config-item-name">${cfg.name}</div>
+                            <div class="config-item-name">
+                                ${cfg.name}
+                                ${isEnabled ? '<span style="margin-left: 8px; padding: 2px 6px; background: #10b981; color: white; border-radius: 4px; font-size: 10px; font-weight: 600;">已启用</span>' : ''}
+                            </div>
                             <div class="config-item-url">${cfg.baseUrl}</div>
                         </div>
-                        <button class="config-item-delete" onclick="event.stopPropagation(); deleteConfig('${cfg.id}')" title="删除配置">🗑️</button>
+                        <div style="display: flex; gap: 4px;">
+                            ${!isEnabled ? `<button class="model-action-btn" onclick="event.stopPropagation(); enableConfig('${cfg.id}')" title="启用配置" style="opacity: 1; background: #10b981; color: white;">✓</button>` : `<button class="model-action-btn" onclick="event.stopPropagation(); disableConfig('${cfg.id}')" title="禁用配置" style="opacity: 1; background: #6b7280; color: white;">✕</button>`}
+                            <button class="config-item-delete" onclick="event.stopPropagation(); deleteConfig('${cfg.id}')" title="删除配置">🗑️</button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1741,19 +1820,33 @@
 
         // Send test request
         async function sendTest() {
+            console.log('🚀 sendTest 被触发');
+
+            const testTitle = document.getElementById('testTitle');
+            const title = testTitle ? testTitle.value : '';
+
+            if (!title || title.trim() === '') {
+                console.log('⚠️ 题目为空，跳过请求');
+                return;
+            }
+
             const testBtn = document.getElementById('testBtn');
+            if (!testBtn || testBtn.disabled) {
+                console.log('⚠️ 按钮不可用或已被禁用，跳过');
+                return;
+            }
+
             const testResult = document.getElementById('testResult');
             const testStatus = document.getElementById('testStatus');
             const testResponse = document.getElementById('testResponse');
             const answerHighlight = document.getElementById('answerHighlight');
             const answerText = document.getElementById('answerText');
 
-            const title = document.getElementById('testTitle').value;
-            const options = document.getElementById('testOptions').value;
-            const type = document.getElementById('testType').value;
-            const method = document.getElementById('requestMethod').value;
+            const options = document.getElementById('testOptions')?.value || '';
+            const type = document.getElementById('testType')?.value || 'single';
+            const method = document.getElementById('requestMethod')?.value || 'post';
             const configSelect = document.getElementById('testConfigSelect');
-            
+
             // Get selected config if any
             let config = null;
             if (configSelect && configSelect.value) {
@@ -1764,11 +1857,6 @@
                 }
             }
 
-            if (!title) {
-                showToast('请输入题目内容', 'error');
-                return;
-            }
-
             testBtn.disabled = true;
             testBtn.innerHTML = '<span class="loading"></span> 发送中...';
             testResult.style.display = 'block';
@@ -1776,7 +1864,7 @@
 
             try {
                 let url, body, headers = {};
-                
+
                 if (method === 'get') {
                     // GET请求 - 如果有配置，使用配置的参数
                     if (config) {
