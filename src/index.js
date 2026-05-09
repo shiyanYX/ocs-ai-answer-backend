@@ -150,7 +150,7 @@ async function safeJsonParse(response) {
 app.post('/api/answer', async (req, res) => {
   try {
     const body = req.body;
-    const title = body.title || body.question || body.query || '';
+    const title = body.title || body.Title || body.question || body.query || '';
     const options = body.options || body.choices || body.items || '';
     const type = body.type || body.questionType || body.category || '';
     const baseUrl = body.baseUrl || body.apiUrl || body.url || '';
