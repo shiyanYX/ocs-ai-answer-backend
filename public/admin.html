@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - OCS AI 题库</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a24;
+            --bg-input: #0d0d14;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border: #2d2d3a;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .header-title h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+        }
+
+        .tab:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .api-key-list {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .api-key-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .api-key-item:last-child {
+            border-bottom: none;
+        }
+
+        .api-key-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .api-key-info {
+            flex: 1;
+        }
+
+        .api-key-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .api-key-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .api-key-stats {
+            display: flex;
+            gap: 24px;
+            margin-right: 16px;
+        }
+
+        .api-key-stat {
+            text-align: center;
+        }
+
+        .api-key-stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .api-key-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .api-key-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.enabled {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-badge.disabled {
+            background: rgba(107, 114, 128, 0.1);
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 480px;
+            margin: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            transform: translateX(120%);
+            transition: transform 0.3s;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+
+        .generated-key {
+            background: var(--bg-input);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+
+        .generated-key-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .generated-key-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .config-section {
+            margin-bottom: 32px;
+        }
+
+        .config-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .api-key-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .api-key-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo-icon">⚙️</div>
+                <div class="header-title">
+                    <h1>管理后台</h1>
+                    <p>OCS AI 题库配置中心</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <span>🚪</span> 退出登录
+                </button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="apikeys">API Key 管理</button>
+            <button class="tab" data-tab="security">安全设置</button>
+        </div>
+
+        <div id="tab-apikeys">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📊 统计概览</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">API Key 总数</div>
+                        <div class="stat-value" id="totalKeys">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">活跃 Key</div>
+                        <div class="stat-value" id="activeKeys">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">总调用次数</div>
+                        <div class="stat-value" id="totalCalls">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🔑 API Key 列表</h2>
+                    <button class="btn btn-primary" onclick="showCreateModal()">
+                        <span>+</span> 生成新 Key
+                    </button>
+                </div>
+
+                <div class="api-key-list" id="apiKeyList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>暂无 API Key</div>
+                        <div style="font-size: 13px; margin-top: 8px;">点击上方按钮生成第一个 Key</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-security" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🔐 管理员账户</h2>
+                </div>
+
+                <div class="config-section">
+                    <div class="config-section-title">账户信息</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                        <div class="stat-card">
+                            <div class="stat-label">用户名</div>
+                            <div class="stat-value" style="font-size: 18px;" id="adminUsername">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">最后登录</div>
+                            <div class="stat-value" style="font-size: 14px;" id="adminLastLogin">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <div class="config-section-title">修改密码</div>
+                    <div class="form-group">
+                        <label class="form-label">当前密码</label>
+                        <input type="password" class="form-input" id="currentPassword" placeholder="输入当前密码">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">新密码（至少6位）</label>
+                        <input type="password" class="form-input" id="newAdminPassword" placeholder="输入新密码">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">确认新密码</label>
+                        <input type="password" class="form-input" id="confirmAdminPassword" placeholder="再次输入新密码">
+                    </div>
+                    <button class="btn btn-primary" onclick="changeAdminPassword()" style="margin-top: 16px;">
+                        <span>💾</span> 保存新密码
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">生成新 API Key</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Key 名称</label>
+                <input type="text" class="form-input" id="keyName" placeholder="例如：OCS刷题脚本">
+            </div>
+
+            <div id="generatedKeySection" style="display: none;">
+                <div class="generated-key">
+                    <div class="generated-key-label">新生成的 API Key（请妥善保管）</div>
+                    <div class="generated-key-value" id="generatedKeyValue"></div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="generateBtn" onclick="generateApiKey()">
+                    <span>🔑</span> 生成
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let adminToken = localStorage.getItem('adminToken');
+
+        if (!adminToken) {
+            window.location.href = '/login.html';
+        }
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${adminToken}`
+            };
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.add('light-theme');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-theme');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/login.html';
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> ${message}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const tabId = tab.dataset.tab;
+                document.getElementById('tab-apikeys').style.display = tabId === 'apikeys' ? 'block' : 'none';
+                document.getElementById('tab-security').style.display = tabId === 'security' ? 'block' : 'none';
+            });
+        });
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats', {
+                    headers: getHeaders()
+                });
+                
+                if (!response.ok && response.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                document.getElementById('totalKeys').textContent = data.totalApiKeys || 0;
+                document.getElementById('activeKeys').textContent = data.activeKeys || 0;
+                document.getElementById('totalCalls').textContent = data.totalCalls || 0;
+                
+                renderApiKeyList(data.keys || []);
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+
+        function renderApiKeyList(keys) {
+            const container = document.getElementById('apiKeyList');
+            
+            if (keys.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div>暂无 API Key</div>
+                        <div style="font-size: 13px; margin-top: 8px;">点击上方按钮生成第一个 Key</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = keys.map(key => `
+                <div class="api-key-item">
+                    <div class="api-key-info">
+                        <div class="api-key-name">${key.name}</div>
+                        <div class="api-key-meta">${key.key.substring(0, 20)}...${key.key.substring(key.key.length - 10)}</div>
+                    </div>
+                    <div class="api-key-stats">
+                        <div class="api-key-stat">
+                            <div class="api-key-stat-value">${key.callCount}</div>
+                            <div class="api-key-stat-label">调用次数</div>
+                        </div>
+                        <div class="api-key-stat">
+                            <div class="status-badge ${key.enabled ? 'enabled' : 'disabled'}">${key.enabled ? '启用' : '禁用'}</div>
+                        </div>
+                    </div>
+                    <div class="api-key-actions">
+                        <button class="btn btn-small ${key.enabled ? 'btn-secondary' : 'btn-primary'}" onclick="toggleKey('${key.key}')">
+                            ${key.enabled ? '禁用' : '启用'}
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="deleteKey('${key.key}')">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCreateModal() {
+            document.getElementById('createModal').classList.add('show');
+            document.getElementById('keyName').value = '';
+            document.getElementById('generatedKeySection').style.display = 'none';
+            document.getElementById('generateBtn').innerHTML = '<span>🔑</span> 生成';
+        }
+
+        function closeModal() {
+            document.getElementById('createModal').classList.remove('show');
+        }
+
+        async function generateApiKey() {
+            const name = document.getElementById('keyName').value.trim() || '未命名';
+            const btn = document.getElementById('generateBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> 生成中...';
+            
+            try {
+                const response = await fetch('/api/admin/apikeys', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ name })
+                });
+                
+                if (!response.ok && response.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('generatedKeyValue').textContent = data.key.key;
+                    document.getElementById('generatedKeySection').style.display = 'block';
+                    btn.innerHTML = '<span>✓</span> 已生成';
+                    loadStats();
+                    showToast('API Key 生成成功', 'success');
+                } else {
+                    showToast(data.msg || '生成失败', 'error');
+                    btn.innerHTML = '<span>🔑</span> 生成';
+                }
+            } catch (error) {
+                showToast('网络错误', 'error');
+                btn.innerHTML = '<span>🔑</span> 生成';
+            }
+            
+            btn.disabled = false;
+        }
+
+        async function toggleKey(key) {
+            try {
+                const response = await fetch(`/api/admin/apikeys/${encodeURIComponent(key)}/toggle`, {
+                    method: 'POST',
+                    headers: getHeaders()
+                });
+                
+                if (!response.ok && response.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                const data = await response.json();
+                showToast(data.msg, data.success ? 'success' : 'error');
+                loadStats();
+            } catch (error) {
+                showToast('操作失败', 'error');
+            }
+        }
+
+        async function deleteKey(key) {
+            if (!confirm('确定要删除这个 API Key 吗？此操作不可撤销。')) return;
+            
+            try {
+                const response = await fetch(`/api/admin/apikeys/${encodeURIComponent(key)}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                
+                if (!response.ok && response.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                const data = await response.json();
+                showToast(data.msg, data.success ? 'success' : 'error');
+                loadStats();
+            } catch (error) {
+                showToast('删除失败', 'error');
+            }
+        }
+
+        async function loadAdminInfo() {
+            try {
+                const response = await fetch('/api/admin/status', {
+                    headers: getHeaders()
+                });
+                
+                if (!response.ok && response.status === 401) {
+                    logout();
+                    return;
+                }
+                
+                const data = await response.json();
+                document.getElementById('adminUsername').textContent = data.username;
+                document.getElementById('adminLastLogin').textContent = data.lastLogin 
+                    ? new Date(data.lastLogin).toLocaleString('zh-CN')
+                    : '从未登录';
+            } catch (error) {
+                console.error('加载管理员信息失败:', error);
+            }
+        }
+
+        async function changeAdminPassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newAdminPassword').value;
+            const confirmPassword = document.getElementById('confirmAdminPassword').value;
+            
+            if (!currentPassword) {
+                showToast('请输入当前密码', 'error');
+                return;
+            }
+            
+            if (!newPassword || newPassword.length < 6) {
+                showToast('新密码至少需要6位', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showToast('两次输入的密码不一致', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/admin/change-password', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        username: 'admin',
+                        oldPassword: currentPassword,
+                        newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('密码修改成功', 'success');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newAdminPassword').value = '';
+                    document.getElementById('confirmAdminPassword').value = '';
+                } else {
+                    showToast(data.msg || '修改失败', 'error');
+                }
+            } catch (error) {
+                showToast('网络错误', 'error');
+            }
+        }
+
+        loadTheme();
+        loadStats();
+        loadAdminInfo();
+    </script>
+</body>
+</html>

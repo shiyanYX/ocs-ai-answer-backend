@@ -951,6 +951,9 @@
                 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
                     <span id="themeIcon">🌙</span>
                 </button>
+                <button class="btn btn-secondary" onclick="goToAdmin()" id="adminBtn" style="display: none;">
+                    <span>🔐</span> 管理后台
+                </button>
                 <div class="status-badge" id="statusBadge" onclick="checkHealth()">
                     <div class="status-dot" id="statusDot"></div>
                     <span class="status-text" id="statusText">检查中...</span>
@@ -1092,6 +1095,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">API Key（必填）</label>
+                    <input type="text" class="form-input" id="testApiKey" placeholder="在管理后台生成的 API Key" style="font-family: 'JetBrains Mono', monospace;">
+                    <div style="font-size: 12px; color: var(--warning); margin-top: 4px;">⚠️ 必须填写有效的 API Key 才能调用接口</div>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">请求方式</label>
                     <select class="form-select" id="requestMethod">
                         <option value="post" selected>POST</option>
@@ -1133,6 +1142,11 @@
                         <input type="text" class="form-input" id="serverHost" placeholder="输入你的服务器IP或域名" value="http://localhost:3000" oninput="updateOCSConfig()">
                         <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">输入你的服务器地址，配置代码将自动更新</div>
                     </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">🔑 API Key</label>
+                        <input type="text" class="form-input" id="ocsApiKey" placeholder="在管理后台生成的 API Key" oninput="updateOCSConfig()">
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">必须填写有效的 API Key 才能调用接口</div>
+                    </div>
                 </div>
 
                 <div class="code-block">
@@ -1149,6 +1163,7 @@
         "type": "GM_xmlhttpRequest",
         "contentType": "json",
         "data": {
+            "apiKey": "你的APIKey",
             "title": "${title}",
             "options": "${options}",
             "type": "${type}"
@@ -1325,12 +1340,37 @@
             console.log('🚀 页面初始化开始');
             loadTheme();
             loadServerHost();
-            loadConfig();
+            checkAuth();
             checkHealth();
             console.log('📦 调用loadConfigs...');
             loadConfigs();
             console.log('✅ 页面初始化完成');
         });
+
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            const adminBtn = document.getElementById('adminBtn');
+            if (token) {
+                adminBtn.style.display = 'flex';
+            } else {
+                adminBtn.style.display = 'none';
+            }
+        }
+
+        function goToAdmin() {
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                window.location.href = '/admin.html';
+            } else {
+                window.location.href = '/login.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            checkAuth();
+            showToast('已退出登录', 'info');
+        }
 
         // === Config Management ===
         async function loadConfigs() {
@@ -1868,6 +1908,15 @@
             const type = document.getElementById('testType')?.value || 'single';
             const method = document.getElementById('requestMethod')?.value || 'post';
             const configSelect = document.getElementById('testConfigSelect');
+            const apiKey = document.getElementById('testApiKey')?.value?.trim() || '';
+
+            if (!apiKey) {
+                console.log('⚠️ API Key 为空，跳过请求');
+                showToast('请先填写 API Key', 'error');
+                testBtn.disabled = false;
+                testBtn.innerHTML = '<span>🚀</span> 发送测试请求';
+                return;
+            }
 
             // Get selected config if any
             let config = null;
@@ -1890,15 +1939,20 @@
                 if (method === 'get') {
                     // GET请求 - 如果有配置，使用配置的参数
                     if (config) {
-                        url = `/api/answer?title=${encodeURIComponent(title)}&options=${encodeURIComponent(options)}&type=${encodeURIComponent(type)}&baseUrl=${encodeURIComponent(config.baseUrl)}&apiKey=${encodeURIComponent(config.apiKey)}&model=${encodeURIComponent(config.model)}`;
+                        url = `/api/answer?apiKey=${encodeURIComponent(apiKey)}&title=${encodeURIComponent(title)}&options=${encodeURIComponent(options)}&type=${encodeURIComponent(type)}&baseUrl=${encodeURIComponent(config.baseUrl)}&apiKey=${encodeURIComponent(config.apiKey)}&model=${encodeURIComponent(config.model)}`;
                     } else {
-                        url = `/api/search?title=${encodeURIComponent(title)}&options=${encodeURIComponent(options)}&type=${encodeURIComponent(type)}`;
+                        url = `/api/answer?apiKey=${encodeURIComponent(apiKey)}&title=${encodeURIComponent(title)}&options=${encodeURIComponent(options)}&type=${encodeURIComponent(type)}`;
                     }
                     body = null;
                 } else {
                     // POST请求
                     url = '/api/answer';
-                    const requestData = { title, options, type };
+                    const requestData = { 
+                        apiKey,
+                        title, 
+                        options, 
+                        type 
+                    };
                     // 如果有配置，添加到请求体
                     if (config) {
                         requestData.baseUrl = config.baseUrl;
@@ -1966,6 +2020,7 @@
         // Update OCS config with current server address
         function updateOCSConfig() {
             const serverHost = document.getElementById('serverHost').value.trim() || 'http://localhost:3000';
+            const apiKey = document.getElementById('ocsApiKey')?.value.trim() || '你的APIKey';
             let finalHost = serverHost;
 
             if (!serverHost.startsWith('http://') && !serverHost.startsWith('https://')) {
@@ -1981,6 +2036,7 @@
                 type: "GM_xmlhttpRequest",
                 contentType: "json",
                 data: {
+                    apiKey: apiKey,
                     title: "${title}",
                     options: "${options}",
                     type: "${type}"
@@ -1989,15 +2045,21 @@
             }], null, 4);
 
             document.getElementById('ocsConfig').textContent = configCode;
+            localStorage.setItem('ocsServerHost', finalHost);
+            localStorage.setItem('ocsApiKey', apiKey);
         }
 
-        // Load saved server address
+        // Load saved server address and API Key
         function loadServerHost() {
             const saved = localStorage.getItem('ocsServerHost');
             if (saved) {
                 document.getElementById('serverHost').value = saved;
-                updateOCSConfig();
             }
+            const savedApiKey = localStorage.getItem('ocsApiKey');
+            if (savedApiKey) {
+                document.getElementById('ocsApiKey').value = savedApiKey;
+            }
+            updateOCSConfig();
         }
 
         // Save server address
