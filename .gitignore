@@ -1,9 +1,36 @@
+# Dependencies
 node_modules/
-data/configs.json
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# Data files
+data/
+.server.pid
+
+# Logs
 *.log
+npm-debug.log*
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Build
 dist/
 build/
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Test
+proto/
+
+# Temp
+tmp/
+temp/
