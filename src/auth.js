@@ -4,7 +4,7 @@ import { join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = join(__dirname, '../');
+const __dirname = join(fileURLToPath(new URL('.', import.meta.url)), '../');
 
 const ADMIN_FILE = join(__dirname, '../../data/admin.json');
 const API_KEY_FILE = join(__dirname, '../../data/api-keys.json');

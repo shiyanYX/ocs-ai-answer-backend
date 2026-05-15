@@ -3,91 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理后台 - OCS AI 题库</title>
+    <title>管理后台 - OCS AI</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: #1a1a24;
-            --bg-input: #0d0d14;
-            --accent-primary: #6366f1;
-            --accent-secondary: #8b5cf6;
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
-            --border: #2d2d3a;
-            --shadow: rgba(0, 0, 0, 0.3);
-        }
-
-        .light-theme {
-            --bg-primary: #f8fafc;
-            --bg-secondary: #ffffff;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --text-muted: #94a3b8;
-            --border: #e2e8f0;
-            --shadow: rgba(0, 0, 0, 0.1);
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --primary-light: #3b82f6;
+            --primary-lighter: #60a5fa;
+            --primary-hover: #1e40af;
+            --success: #059669;
+            --error: #dc2626;
+            --warning: #d97706;
+            --info: #0284c7;
+            --bg-sidebar: #0f172a;
+            --bg-sidebar-hover: #1e293b;
+            --bg-sidebar-active: rgba(30, 64, 175, 0.3);
+            --bg-primary: #eff6ff;
+            --bg-card: #ffffff;
+            --text-sidebar: #94a3b8;
+            --text-sidebar-active: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #dbeafe;
+            --border-light: #e0f2fe;
+            --shadow-sm: 0 1px 2px rgba(30, 64, 175, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(30, 64, 175, 0.1), 0 2px 4px -2px rgba(30, 64, 175, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(30, 64, 175, 0.15), 0 4px 6px -4px rgba(30, 64, 175, 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --sidebar-width: 250px;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
+            display: flex;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 32px 24px;
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            min-height: 100vh;
+            padding: 24px 0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 16px;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .sidebar-brand-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-sidebar-active);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            color: var(--text-sidebar);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-sidebar-hover);
+            color: var(--text-sidebar-active);
+        }
+
+        .nav-item.active {
+            background: var(--bg-sidebar-active);
+            color: var(--text-sidebar-active);
+            border-left: 3px solid var(--primary-light);
+            box-shadow: inset 0 0 20px rgba(30, 64, 175, 0.1);
+        }
+
+        .nav-item .icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            background: var(--bg-sidebar-hover);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sidebar-active);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--accent-gradient);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        .header-title h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .header-title p {
-            font-size: 13px;
-            color: var(--text-muted);
+        .header-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
         .header-right {
@@ -98,11 +222,11 @@
 
         .btn {
             padding: 10px 20px;
-            border-radius: 10px;
+            border-radius: var(--radius-md);
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             border: none;
             display: inline-flex;
             align-items: center;
@@ -110,106 +234,87 @@
         }
 
         .btn-primary {
-            background: var(--accent-gradient);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
         }
 
         .btn-secondary {
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             color: var(--text-primary);
             border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            border-color: var(--accent-primary);
+            background: var(--border);
         }
 
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .btn-small {
+        .btn-sm {
             padding: 6px 12px;
             font-size: 12px;
         }
 
-        .theme-toggle {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 16px;
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.15);
         }
 
-        .tab {
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid transparent;
+        .btn-success {
+            background: rgba(16, 185, 129, 0.08);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        .tab:hover {
-            background: var(--bg-card);
-            color: var(--text-primary);
+        .btn-success:hover {
+            background: rgba(16, 185, 129, 0.15);
         }
 
-        .tab.active {
-            background: var(--accent-primary);
-            color: white;
+        .content-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
         }
 
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px;
+            border-radius: var(--radius-lg);
+            padding: 24px;
             margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .card-title {
-            font-family: 'Space Grotesk', sans-serif;
             font-size: 18px;
             font-weight: 600;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .stats-grid {
@@ -219,108 +324,89 @@
         }
 
         .stat-card {
-            background: var(--bg-secondary);
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.primary { background: linear-gradient(135deg, rgba(30, 64, 175, 0.15), rgba(59, 130, 246, 0.1)); color: var(--primary); }
+        .stat-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .stat-icon.info { background: rgba(14, 165, 233, 0.1); color: var(--info); }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
         }
 
         .stat-label {
             font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--accent-primary);
-        }
-
-        .api-key-list {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .api-key-item {
-            display: flex;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            transition: background 0.2s;
-        }
-
-        .api-key-item:last-child {
-            border-bottom: none;
-        }
-
-        .api-key-item:hover {
-            background: var(--bg-secondary);
-        }
-
-        .api-key-info {
-            flex: 1;
-        }
-
-        .api-key-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .api-key-meta {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-family: 'JetBrains Mono', monospace;
-            word-break: break-all;
-        }
-
-        .api-key-stats {
-            display: flex;
-            gap: 24px;
-            margin-right: 16px;
-            align-items: center;
-        }
-
-        .api-key-stat {
-            text-align: center;
-        }
-
-        .api-key-stat-value {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .api-key-stat-label {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .api-key-limit {
-            font-size: 12px;
             color: var(--text-secondary);
         }
 
-        .api-key-expires {
-            font-size: 12px;
-            color: var(--text-muted);
+        .table-container {
+            overflow-x: auto;
         }
 
-        .api-key-actions {
-            display: flex;
-            gap: 8px;
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--bg-secondary);
         }
 
         .status-badge {
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .status-badge.enabled {
@@ -338,6 +424,11 @@
             color: var(--error);
         }
 
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -349,55 +440,83 @@
             margin-bottom: 16px;
         }
 
-        .modal {
+        .empty-state-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            animation: fadeIn 0.2s ease;
         }
 
-        .modal.show {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-overlay.show {
             display: flex;
         }
 
-        .modal-content {
+        .modal {
             background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 32px;
+            border-radius: var(--radius-xl);
+            padding: 24px;
             width: 100%;
             max-width: 520px;
             margin: 20px;
-            max-height: 90vh;
-            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .modal-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
+            color: var(--text-primary);
         }
 
         .modal-close {
             width: 32px;
             height: 32px;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             background: var(--bg-secondary);
             border: none;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             cursor: pointer;
             font-size: 18px;
             display: flex;
@@ -411,36 +530,37 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .form-label {
             display: block;
             font-size: 14px;
             font-weight: 500;
-            color: var(--text-secondary);
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
         .form-input, .form-select {
             width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-input);
+            padding: 12px 14px;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text-primary);
+            border-radius: var(--radius-md);
             font-size: 14px;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .form-select {
             font-family: 'Inter', sans-serif;
-            cursor: pointer;
+            color: var(--text-primary);
+            background: var(--bg-secondary);
+            transition: all 0.2s ease;
+            outline: none;
         }
 
         .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--accent-primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
         }
 
         .form-hint {
@@ -449,13 +569,13 @@
             margin-top: 6px;
         }
 
-        .modal-actions {
+        .modal-footer {
             display: flex;
             gap: 12px;
             margin-top: 24px;
         }
 
-        .modal-actions .btn {
+        .modal-footer .btn {
             flex: 1;
         }
 
@@ -463,17 +583,17 @@
             position: fixed;
             top: 24px;
             right: 24px;
-            padding: 16px 24px;
-            border-radius: 12px;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
             color: white;
             font-size: 14px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
+            gap: 10px;
+            box-shadow: var(--shadow-lg);
             transform: translateX(120%);
-            transition: transform 0.3s;
+            transition: transform 0.3s ease;
             z-index: 2000;
         }
 
@@ -483,12 +603,13 @@
 
         .toast.success { background: var(--success); }
         .toast.error { background: var(--error); }
+        .toast.warning { background: var(--warning); }
 
         .generated-key {
-            background: var(--bg-input);
+            background: var(--bg-secondary);
             border: 1px dashed var(--border);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: var(--radius-md);
+            padding: 16px;
             margin-top: 16px;
         }
 
@@ -496,307 +617,211 @@
             font-size: 12px;
             color: var(--text-muted);
             margin-bottom: 8px;
+            display: block;
         }
 
         .generated-key-value {
             font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
             word-break: break-all;
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
             padding: 12px;
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
+            color: var(--primary);
         }
 
         .copy-btn {
-            margin-top: 8px;
-            padding: 6px 12px;
-            font-size: 12px;
-            background: var(--accent-primary);
+            margin-top: 12px;
+            padding: 8px 16px;
+            font-size: 13px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
         }
 
-        .config-section {
-            margin-bottom: 32px;
+        .copy-btn:hover {
+            background: var(--primary-dark);
         }
 
-        .config-section:last-child {
-            margin-bottom: 0;
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 16px;
         }
 
-        .config-section-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .inline-form {
-            display: flex;
-            gap: 12px;
-            align-items: flex-end;
-        }
-
-        .inline-form .form-group {
-            margin-bottom: 0;
-            flex: 1;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-all;
         }
 
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 16px;
-                text-align: center;
+            :root {
+                --sidebar-width: 70px;
             }
-
-            .api-key-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
+            
+            .sidebar-brand-title,
+            .nav-item-text,
+            .user-details {
+                display: none;
             }
-
-            .api-key-actions {
-                width: 100%;
-                justify-content: flex-end;
+            
+            .sidebar-header,
+            .sidebar-footer {
+                padding: 16px 8px;
             }
-
-            .inline-form {
-                flex-direction: column;
+            
+            .nav-item {
+                justify-content: center;
+            }
+            
+            .user-info {
+                justify-content: center;
+                padding: 12px 8px;
+            }
+            
+            .header-title {
+                font-size: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal {
+                margin: 10px;
+                padding: 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="header-left">
-                <div class="logo-icon">⚙️</div>
-                <div class="header-title">
-                    <h1>管理后台</h1>
-                    <p>OCS AI 题库配置中心</p>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">⚙️</div>
+                <span class="sidebar-brand-title">OCS AI</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item active" data-page="dashboard">
+                <span class="icon">📊</span>
+                <span class="nav-item-text">仪表盘</span>
+            </div>
+            <div class="nav-item" data-page="apikeys">
+                <span class="icon">🔑</span>
+                <span class="nav-item-text">API Key 管理</span>
+            </div>
+            <div class="nav-item" data-page="configs">
+                <span class="icon">⚡</span>
+                <span class="nav-item-text">AI 配置</span>
+            </div>
+            <div class="nav-item" data-page="ocs">
+                <span class="icon">📋</span>
+                <span class="nav-item-text">OCS 配置</span>
+            </div>
+            <div class="nav-item" data-page="test">
+                <span class="icon">🧪</span>
+                <span class="nav-item-text">接口测试</span>
+            </div>
+            <div class="nav-item" data-page="settings">
+                <span class="icon">🔧</span>
+                <span class="nav-item-text">安全设置</span>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info" onclick="logout()">
+                <div class="user-avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">管理员</div>
+                    <div class="user-role">超级管理员</div>
                 </div>
             </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h1 class="header-title" id="pageTitle">仪表盘</h1>
+                <p class="header-subtitle" id="pageSubtitle">欢迎回来，查看系统概览</p>
+            </div>
             <div class="header-right">
-                <button class="theme-toggle" onclick="toggleTheme()">
-                    <span id="themeIcon">🌙</span>
-                </button>
-                <button class="btn btn-secondary" onclick="logout()">
-                    <span>🚪</span> 退出登录
-                </button>
+                <span style="color: var(--text-muted); font-size: 14px;">
+                    服务器运行中
+                </span>
             </div>
         </header>
 
-        <div class="tabs">
-            <button class="tab active" data-tab="apikeys">API Key 管理</button>
-            <button class="tab" data-tab="security">安全设置</button>
-        </div>
-
-        <div id="tab-apikeys">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">📊 统计概览</h2>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
+        <div class="content-area" id="contentArea">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon primary">🔑</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="statKeys">0</div>
                         <div class="stat-label">API Key 总数</div>
-                        <div class="stat-value" id="totalKeys">-</div>
                     </div>
-                    <div class="stat-card">
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="statActive">0</div>
                         <div class="stat-label">活跃 Key</div>
-                        <div class="stat-value" id="activeKeys">-</div>
                     </div>
-                    <div class="stat-card">
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">📡</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="statCalls">0</div>
                         <div class="stat-label">总调用次数</div>
-                        <div class="stat-value" id="totalCalls">-</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">⚡</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="statConfigs">0</div>
+                        <div class="stat-label">AI 配置数</div>
                     </div>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">🔑 API Key 列表</h2>
-                    <button class="btn btn-primary" onclick="showCreateModal()">
-                        <span>+</span> 生成新 Key
-                    </button>
+                    <h2 class="card-title">📊 最近活动</h2>
                 </div>
-
-                <div class="api-key-list" id="apiKeyList">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <div>暂无 API Key</div>
-                        <div style="font-size: 13px; margin-top: 8px;">点击上方按钮生成第一个 Key</div>
-                    </div>
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">暂无活动记录</div>
+                    <div class="empty-state-desc">系统启动后将显示最近的 API 调用记录</div>
                 </div>
             </div>
         </div>
+    </main>
 
-        <div id="tab-security" style="display: none;">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">🔐 管理员账户</h2>
-                </div>
-
-                <div class="config-section">
-                    <div class="config-section-title">账户信息</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                        <div class="stat-card">
-                            <div class="stat-label">用户名</div>
-                            <div class="stat-value" style="font-size: 18px;" id="adminUsername">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">最后登录</div>
-                            <div class="stat-value" style="font-size: 14px;" id="adminLastLogin">-</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="config-section">
-                    <div class="config-section-title">修改密码</div>
-                    <div class="form-group">
-                        <label class="form-label">当前密码</label>
-                        <input type="password" class="form-input" id="currentPassword" placeholder="输入当前密码">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">新密码（至少6位）</label>
-                        <input type="password" class="form-input" id="newAdminPassword" placeholder="输入新密码">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">确认新密码</label>
-                        <input type="password" class="form-input" id="confirmAdminPassword" placeholder="再次输入新密码">
-                    </div>
-                    <button class="btn btn-primary" onclick="changeAdminPassword()" style="margin-top: 16px;">
-                        <span>💾</span> 保存新密码
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="createModal">
-        <div class="modal-content">
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">生成新 API Key</h3>
-                <button class="modal-close" onclick="closeModal('createModal')">×</button>
+                <h3 class="modal-title" id="modalTitle">生成 API Key</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">Key 别名</label>
-                <input type="text" class="form-input" id="keyAlias" placeholder="例如：OCS刷题脚本">
-                <div class="form-hint">用于识别此 Key 的名称，方便管理</div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">限制类型</label>
-                <select class="form-select" id="limitType" onchange="toggleLimitFields()">
-                    <option value="none">无限制</option>
-                    <option value="expires">有效期限制</option>
-                    <option value="maxCalls">次数限制</option>
-                    <option value="both">有效期 + 次数限制</option>
-                </select>
-            </div>
-
-            <div id="expiresField" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label">过期时间</label>
-                    <input type="datetime-local" class="form-input" id="keyExpiresAt">
-                    <div class="form-hint">留空表示永不过期</div>
-                </div>
-            </div>
-
-            <div id="maxCallsField" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label">最大调用次数</label>
-                    <input type="number" class="form-input" id="keyMaxCalls" placeholder="例如：1000" min="1">
-                    <div class="form-hint">达到次数后 Key 自动失效</div>
-                </div>
-            </div>
-
-            <div id="generatedKeySection" style="display: none;">
-                <div class="generated-key">
-                    <div class="generated-key-label">新生成的 API Key（请妥善保管）</div>
-                    <div class="generated-key-value" id="generatedKeyValue"></div>
-                    <button class="copy-btn" onclick="copyKey()">📋 复制 Key</button>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('createModal')">关闭</button>
-                <button class="btn btn-primary" id="generateBtn" onclick="generateApiKey()">
-                    <span>🔑</span> 生成
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">编辑 API Key</h3>
-                <button class="modal-close" onclick="closeModal('editModal')">×</button>
-            </div>
-
-            <input type="hidden" id="editKeyId">
-            <input type="hidden" id="editKeyValue">
-
-            <div class="form-group">
-                <label class="form-label">Key 别名</label>
-                <input type="text" class="form-input" id="editKeyAlias" placeholder="Key 别名">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">限制类型</label>
-                <select class="form-select" id="editLimitType" onchange="toggleEditLimitFields()">
-                    <option value="none">无限制</option>
-                    <option value="expires">有效期限制</option>
-                    <option value="maxCalls">次数限制</option>
-                    <option value="both">有效期 + 次数限制</option>
-                </select>
-            </div>
-
-            <div id="editExpiresField" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label">过期时间</label>
-                    <input type="datetime-local" class="form-input" id="editKeyExpiresAt">
-                </div>
-            </div>
-
-            <div id="editMaxCallsField" style="display: none;">
-                <div class="form-group">
-                    <label class="form-label">最大调用次数</label>
-                    <input type="number" class="form-input" id="editKeyMaxCalls" min="1">
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('editModal')">取消</button>
-                <button class="btn btn-primary" onclick="updateApiKey()">
-                    <span>💾</span> 保存
-                </button>
-            </div>
+            <div id="modalContent"></div>
         </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        let adminToken = localStorage.getItem('adminToken');
-
+        const adminToken = localStorage.getItem('adminToken');
+        
         if (!adminToken) {
             window.location.href = '/login.html';
         }
@@ -808,321 +833,352 @@
             };
         }
 
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            
-            if (body.classList.contains('light-theme')) {
-                body.classList.remove('light-theme');
-                themeIcon.textContent = '🌙';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.add('light-theme');
-                themeIcon.textContent = '☀️';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-theme');
-                document.getElementById('themeIcon').textContent = '☀️';
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('adminToken');
-            window.location.href = '/login.html';
-        }
-
-        function showToast(message, type = 'info') {
+        function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> ${message}`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠️'}</span>
+                <span>${message}</span>
+            `;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                const tabId = tab.dataset.tab;
-                document.getElementById('tab-apikeys').style.display = tabId === 'apikeys' ? 'block' : 'none';
-                document.getElementById('tab-security').style.display = tabId === 'security' ? 'block' : 'none';
-            });
-        });
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/login.html';
+            }
+        }
 
         async function loadStats() {
             try {
-                const response = await fetch('/api/admin/stats', {
-                    headers: getHeaders()
-                });
-                
-                if (!response.ok && response.status === 401) {
-                    logout();
+                const [statsRes, configsRes] = await Promise.all([
+                    fetch('/api/admin/stats', { headers: getHeaders() }),
+                    fetch('/api/configs', { headers: getHeaders() })
+                ]);
+
+                if (!statsRes.ok || !configsRes.ok) {
+                    if (statsRes.status === 401 || configsRes.status === 401) {
+                        logout();
+                    }
                     return;
                 }
-                
-                const data = await response.json();
-                
-                document.getElementById('totalKeys').textContent = data.totalApiKeys || 0;
-                document.getElementById('activeKeys').textContent = data.activeKeys || 0;
-                document.getElementById('totalCalls').textContent = data.totalCalls || 0;
-                
-                await loadApiKeys();
+
+                const stats = await statsRes.json();
+                const configs = await configsRes.json();
+
+                document.getElementById('statKeys').textContent = stats.totalApiKeys || 0;
+                document.getElementById('statActive').textContent = stats.activeKeys || 0;
+                document.getElementById('statCalls').textContent = stats.totalCalls || 0;
+                document.getElementById('statConfigs').textContent = configs.length || 0;
             } catch (error) {
                 console.error('加载统计失败:', error);
             }
         }
 
+        async function loadPage(page) {
+            const contentArea = document.getElementById('contentArea');
+            
+            switch(page) {
+                case 'dashboard':
+                    contentArea.innerHTML = `
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon primary">🔑</div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="statKeys">0</div>
+                                    <div class="stat-label">API Key 总数</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon success">✅</div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="statActive">0</div>
+                                    <div class="stat-label">活跃 Key</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon info">📡</div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="statCalls">0</div>
+                                    <div class="stat-label">总调用次数</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon warning">⚡</div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="statConfigs">0</div>
+                                    <div class="stat-label">AI 配置数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">📊 最近活动</h2>
+                            </div>
+                            <div class="empty-state">
+                                <div class="empty-state-icon">📋</div>
+                                <div class="empty-state-title">暂无活动记录</div>
+                                <div class="empty-state-desc">系统启动后将显示最近的 API 调用记录</div>
+                            </div>
+                        </div>
+                    `;
+                    await loadStats();
+                    break;
+                
+                case 'apikeys':
+                    await loadApiKeys();
+                    break;
+                
+                case 'configs':
+                    await loadConfigs();
+                    break;
+                
+                case 'ocs':
+                    loadOcsConfig();
+                    break;
+                
+                case 'test':
+                    loadApiTest();
+                    break;
+                
+                case 'settings':
+                    await loadSettings();
+                    break;
+            }
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                const page = item.dataset.page;
+                document.getElementById('pageTitle').textContent = {
+                    dashboard: '仪表盘',
+                    apikeys: 'API Key 管理',
+                    configs: 'AI 配置',
+                    ocs: 'OCS 配置',
+                    test: '接口测试',
+                    settings: '安全设置'
+                }[page];
+                
+                document.getElementById('pageSubtitle').textContent = {
+                    dashboard: '欢迎回来，查看系统概览',
+                    apikeys: '管理 API Key 的生成、编辑和删除',
+                    configs: '配置和管理 AI 提供商',
+                    ocs: '生成 OCS 题库配置代码',
+                    test: '测试 AI 搜题接口',
+                    settings: '管理管理员账户和安全设置'
+                }[page];
+                
+                loadPage(page);
+            });
+        });
+
         async function loadApiKeys() {
             try {
-                const response = await fetch('/api/admin/apikeys', {
-                    headers: getHeaders()
-                });
-                
-                if (!response.ok && response.status === 401) {
-                    logout();
-                    return;
+                const response = await fetch('/api/admin/apikeys', { headers: getHeaders() });
+                if (!response.ok) {
+                    if (response.status === 401) { logout(); return; }
+                    throw new Error('加载失败');
                 }
                 
                 const data = await response.json();
-                renderApiKeyList(data.keys || []);
-            } catch (error) {
-                console.error('加载API Keys失败:', error);
-            }
-        }
-
-        function renderApiKeyList(keys) {
-            const container = document.getElementById('apiKeyList');
-            
-            if (keys.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📭</div>
-                        <div>暂无 API Key</div>
-                        <div style="font-size: 13px; margin-top: 8px;">点击上方按钮生成第一个 Key</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = keys.map(key => {
-                let statusBadge = '';
-                if (key.isExpired) {
-                    statusBadge = '<span class="status-badge expired">已过期</span>';
-                } else if (key.enabled) {
-                    statusBadge = '<span class="status-badge enabled">启用</span>';
-                } else {
-                    statusBadge = '<span class="status-badge disabled">禁用</span>';
-                }
-
-                let limitInfo = '';
-                if (key.maxCalls) {
-                    const remaining = key.remainingCalls;
-                    limitInfo += `<span class="api-key-limit">限制: ${key.callCount}/${key.maxCalls}次</span>`;
-                }
-                if (key.expiresAt) {
-                    const expDate = new Date(key.expiresAt).toLocaleDateString('zh-CN');
-                    limitInfo += `<span class="api-key-expires">过期: ${expDate}</span>`;
-                }
-
-                return `
-                    <div class="api-key-item">
-                        <div class="api-key-info">
-                            <div class="api-key-name">
-                                ${key.alias}
-                                ${statusBadge}
-                            </div>
-                            <div class="api-key-meta">${key.key}</div>
-                            ${limitInfo ? `<div style="margin-top: 6px; display: flex; gap: 12px;">${limitInfo}</div>` : ''}
-                        </div>
-                        <div class="api-key-stats">
-                            <div class="api-key-stat">
-                                <div class="api-key-stat-value">${key.callCount}</div>
-                                <div class="api-key-stat-label">调用次数</div>
-                            </div>
-                        </div>
-                        <div class="api-key-actions">
-                            <button class="btn btn-small btn-secondary" onclick="showEditModal('${key.key}')">编辑</button>
-                            <button class="btn btn-small ${key.enabled ? 'btn-secondary' : 'btn-primary'}" onclick="toggleKey('${key.key}')">
-                                ${key.enabled ? '禁用' : '启用'}
+                const keys = data.keys || [];
+                
+                document.getElementById('contentArea').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🔑 API Key 列表</h2>
+                            <button class="btn btn-primary" onclick="showCreateKeyModal()">
+                                <span>+</span> 生成新 Key
                             </button>
-                            <button class="btn btn-small btn-secondary" onclick="regenerateKey('${key.key}')">重新生成</button>
-                            <button class="btn btn-small btn-danger" onclick="deleteKey('${key.key}')">删除</button>
                         </div>
+                        ${keys.length === 0 ? `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">🔑</div>
+                                <div class="empty-state-title">暂无 API Key</div>
+                                <div class="empty-state-desc">点击上方按钮生成第一个 Key</div>
+                            </div>
+                        ` : `
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>别名</th>
+                                            <th>Key</th>
+                                            <th>调用次数</th>
+                                            <th>限制</th>
+                                            <th>状态</th>
+                                            <th>创建时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${keys.map(k => `
+                                            <tr>
+                                                <td><strong>${k.alias}</strong></td>
+                                                <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">${k.key}</td>
+                                                <td>${k.callCount}</td>
+                                                <td>
+                                                    ${k.maxCalls ? `<span style="color: var(--text-secondary); font-size: 12px;">${k.callCount}/${k.maxCalls}次</span>` : '-'}
+                                                    ${k.expiresAt ? `<br><span style="color: var(--text-muted); font-size: 11px;">${new Date(k.expiresAt).toLocaleDateString()}</span>` : ''}
+                                                </td>
+                                                <td>
+                                                    <span class="status-badge ${k.isExpired ? 'expired' : k.enabled ? 'enabled' : 'disabled'}">
+                                                        ${k.isExpired ? '已过期' : k.enabled ? '启用' : '禁用'}
+                                                    </span>
+                                                </td>
+                                                <td>${new Date(k.createdAt).toLocaleString()}</td>
+                                                <td class="actions-cell">
+                                                    <button class="btn btn-sm btn-secondary" onclick="showEditKeyModal('${k.key}')">编辑</button>
+                                                    <button class="btn btn-sm ${k.enabled ? 'btn-danger' : 'btn-success'}" onclick="toggleKey('${k.key}')">
+                                                        ${k.enabled ? '禁用' : '启用'}
+                                                    </button>
+                                                    <button class="btn btn-sm btn-secondary" onclick="regenerateKey('${k.key}')">重新生成</button>
+                                                    <button class="btn btn-sm btn-danger" onclick="deleteKey('${k.key}')">删除</button>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `}
                     </div>
                 `;
-            }).join('');
-        }
-
-        function toggleLimitFields() {
-            const limitType = document.getElementById('limitType').value;
-            document.getElementById('expiresField').style.display = (limitType === 'expires' || limitType === 'both') ? 'block' : 'none';
-            document.getElementById('maxCallsField').style.display = (limitType === 'maxCalls' || limitType === 'both') ? 'block' : 'none';
-        }
-
-        function toggleEditLimitFields() {
-            const limitType = document.getElementById('editLimitType').value;
-            document.getElementById('editExpiresField').style.display = (limitType === 'expires' || limitType === 'both') ? 'block' : 'none';
-            document.getElementById('editMaxCallsField').style.display = (limitType === 'maxCalls' || limitType === 'both') ? 'block' : 'none';
-        }
-
-        function showCreateModal() {
-            document.getElementById('createModal').classList.add('show');
-            document.getElementById('keyAlias').value = '';
-            document.getElementById('limitType').value = 'none';
-            document.getElementById('keyExpiresAt').value = '';
-            document.getElementById('keyMaxCalls').value = '';
-            document.getElementById('generatedKeySection').style.display = 'none';
-            document.getElementById('generateBtn').innerHTML = '<span>🔑</span> 生成';
-            toggleLimitFields();
-        }
-
-        async function showEditModal(key) {
-            try {
-                const response = await fetch('/api/admin/apikeys', {
-                    headers: getHeaders()
-                });
-                const data = await response.json();
-                const keyData = data.keys.find(k => k.key === key);
-                
-                if (keyData) {
-                    document.getElementById('editKeyId').value = keyData.id;
-                    document.getElementById('editKeyValue').value = key;
-                    document.getElementById('editKeyAlias').value = keyData.alias;
-                    
-                    let limitType = 'none';
-                    if (keyData.expiresAt && keyData.maxCalls) {
-                        limitType = 'both';
-                    } else if (keyData.expiresAt) {
-                        limitType = 'expires';
-                    } else if (keyData.maxCalls) {
-                        limitType = 'maxCalls';
-                    }
-                    
-                    document.getElementById('editLimitType').value = limitType;
-                    
-                    if (keyData.expiresAt) {
-                        const expDate = new Date(keyData.expiresAt);
-                        expDate.setMinutes(expDate.getMinutes() - expDate.getTimezoneOffset());
-                        document.getElementById('editKeyExpiresAt').value = expDate.toISOString().slice(0, 16);
-                    }
-                    
-                    if (keyData.maxCalls) {
-                        document.getElementById('editKeyMaxCalls').value = keyData.maxCalls;
-                    }
-                    
-                    toggleEditLimitFields();
-                    document.getElementById('editModal').classList.add('show');
-                }
             } catch (error) {
-                showToast('加载失败', 'error');
+                console.error('加载 API Keys 失败:', error);
             }
         }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
+        function showCreateKeyModal() {
+            document.getElementById('modalTitle').textContent = '生成新 API Key';
+            document.getElementById('modalContent').innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">Key 别名</label>
+                    <input type="text" class="form-input" id="newKeyAlias" placeholder="例如：OCS刷题脚本">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">过期时间（可选）</label>
+                    <input type="datetime-local" class="form-input" id="newKeyExpires">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">最大调用次数（可选）</label>
+                    <input type="number" class="form-input" id="newKeyMaxCalls" placeholder="留空表示无限制" min="1">
+                </div>
+                <div id="generatedKeyDisplay" style="display: none;">
+                    <div class="generated-key">
+                        <span class="generated-key-label">新生成的 API Key（请妥善保管）</span>
+                        <div class="generated-key-value" id="generatedKeyValue"></div>
+                        <button class="copy-btn" onclick="copyKey()">📋 复制 Key</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" onclick="createKey()">生成</button>
+                </div>
+            `;
+            document.getElementById('modalOverlay').classList.add('show');
         }
 
-        async function generateApiKey() {
-            const alias = document.getElementById('keyAlias').value.trim() || '未命名';
-            const limitType = document.getElementById('limitType').value;
-            
-            let expiresAt = null;
-            let maxCalls = null;
-            
-            if (limitType === 'expires' || limitType === 'both') {
-                const expiresInput = document.getElementById('keyExpiresAt').value;
-                if (expiresInput) {
-                    expiresAt = new Date(expiresInput).toISOString();
-                }
-            }
-            
-            if (limitType === 'maxCalls' || limitType === 'both') {
-                const maxCallsInput = document.getElementById('keyMaxCalls').value;
-                if (maxCallsInput) {
-                    maxCalls = parseInt(maxCallsInput);
-                }
-            }
-            
-            const btn = document.getElementById('generateBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="loading"></span> 生成中...';
+        async function createKey() {
+            const alias = document.getElementById('newKeyAlias').value || '未命名';
+            const expiresAt = document.getElementById('newKeyExpires').value;
+            const maxCalls = document.getElementById('newKeyMaxCalls').value;
             
             try {
                 const response = await fetch('/api/admin/apikeys', {
                     method: 'POST',
                     headers: getHeaders(),
-                    body: JSON.stringify({ alias, expiresAt, maxCalls })
+                    body: JSON.stringify({
+                        alias,
+                        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+                        maxCalls: maxCalls ? parseInt(maxCalls) : null
+                    })
                 });
-                
-                if (!response.ok && response.status === 401) {
-                    logout();
-                    return;
-                }
                 
                 const data = await response.json();
                 
                 if (data.success) {
                     document.getElementById('generatedKeyValue').textContent = data.key.key;
-                    document.getElementById('generatedKeySection').style.display = 'block';
-                    btn.innerHTML = '<span>✓</span> 已生成';
-                    loadStats();
+                    document.getElementById('generatedKeyDisplay').style.display = 'block';
                     showToast('API Key 生成成功', 'success');
+                    setTimeout(() => {
+                        loadPage('apikeys');
+                        closeModal();
+                    }, 2000);
                 } else {
                     showToast(data.msg || '生成失败', 'error');
-                    btn.innerHTML = '<span>🔑</span> 生成';
                 }
             } catch (error) {
-                showToast('网络错误', 'error');
-                btn.innerHTML = '<span>🔑</span> 生成';
+                showToast('生成失败', 'error');
             }
-            
-            btn.disabled = false;
         }
 
-        async function updateApiKey() {
-            const key = document.getElementById('editKeyValue').value;
-            const alias = document.getElementById('editKeyAlias').value.trim();
-            const limitType = document.getElementById('editLimitType').value;
-            
-            let expiresAt = null;
-            let maxCalls = null;
-            
-            if (limitType === 'expires' || limitType === 'both') {
-                const expiresInput = document.getElementById('editKeyExpiresAt').value;
-                if (expiresInput) {
-                    expiresAt = new Date(expiresInput).toISOString();
-                }
+        async function showEditKeyModal(key) {
+            try {
+                const response = await fetch('/api/admin/apikeys', { headers: getHeaders() });
+                const data = await response.json();
+                const keyData = data.keys.find(k => k.key === key);
+                
+                if (!keyData) return;
+                
+                document.getElementById('modalTitle').textContent = '编辑 API Key';
+                document.getElementById('modalContent').innerHTML = `
+                    <input type="hidden" id="editKey" value="${key}">
+                    <div class="form-group">
+                        <label class="form-label">Key 别名</label>
+                        <input type="text" class="form-input" id="editKeyAlias" value="${keyData.alias}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">过期时间（可选）</label>
+                        <input type="datetime-local" class="form-input" id="editKeyExpires" value="${keyData.expiresAt ? new Date(keyData.expiresAt).toISOString().slice(0, 16) : ''}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">最大调用次数（可选）</label>
+                        <input type="number" class="form-input" id="editKeyMaxCalls" value="${keyData.maxCalls || ''}" placeholder="留空表示无限制" min="1">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button class="btn btn-primary" onclick="saveKey()">保存</button>
+                    </div>
+                `;
+                document.getElementById('modalOverlay').classList.add('show');
+            } catch (error) {
+                showToast('加载失败', 'error');
             }
-            
-            if (limitType === 'maxCalls' || limitType === 'both') {
-                const maxCallsInput = document.getElementById('editKeyMaxCalls').value;
-                if (maxCallsInput) {
-                    maxCalls = parseInt(maxCallsInput);
-                }
-            }
+        }
+
+        async function saveKey() {
+            const key = document.getElementById('editKey').value;
+            const alias = document.getElementById('editKeyAlias').value;
+            const expiresAt = document.getElementById('editKeyExpires').value;
+            const maxCalls = document.getElementById('editKeyMaxCalls').value;
             
             try {
                 const response = await fetch(`/api/admin/apikeys/${encodeURIComponent(key)}`, {
                     method: 'PUT',
                     headers: getHeaders(),
-                    body: JSON.stringify({ alias, expiresAt, maxCalls })
+                    body: JSON.stringify({
+                        alias,
+                        expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
+                        maxCalls: maxCalls ? parseInt(maxCalls) : null
+                    })
                 });
                 
                 const data = await response.json();
-                showToast(data.msg, data.success ? 'success' : 'error');
                 
                 if (data.success) {
-                    closeModal('editModal');
-                    loadStats();
+                    showToast('保存成功', 'success');
+                    loadPage('apikeys');
+                    closeModal();
+                } else {
+                    showToast(data.msg || '保存失败', 'error');
                 }
             } catch (error) {
-                showToast('更新失败', 'error');
+                showToast('保存失败', 'error');
             }
         }
 
@@ -1133,14 +1189,9 @@
                     headers: getHeaders()
                 });
                 
-                if (!response.ok && response.status === 401) {
-                    logout();
-                    return;
-                }
-                
                 const data = await response.json();
                 showToast(data.msg, data.success ? 'success' : 'error');
-                loadStats();
+                loadPage('apikeys');
             } catch (error) {
                 showToast('操作失败', 'error');
             }
@@ -1159,9 +1210,9 @@
                 
                 if (data.success) {
                     showToast('Key 已重新生成', 'success');
-                    loadStats();
+                    loadPage('apikeys');
                 } else {
-                    showToast(data.msg || '操作失败', 'error');
+                    showToast(data.msg, 'error');
                 }
             } catch (error) {
                 showToast('操作失败', 'error');
@@ -1169,7 +1220,7 @@
         }
 
         async function deleteKey(key) {
-            if (!confirm('确定要删除这个 API Key 吗？此操作不可撤销。')) return;
+            if (!confirm('确定要删除这个 API Key 吗？')) return;
             
             try {
                 const response = await fetch(`/api/admin/apikeys/${encodeURIComponent(key)}`, {
@@ -1177,14 +1228,9 @@
                     headers: getHeaders()
                 });
                 
-                if (!response.ok && response.status === 401) {
-                    logout();
-                    return;
-                }
-                
                 const data = await response.json();
                 showToast(data.msg, data.success ? 'success' : 'error');
-                loadStats();
+                loadPage('apikeys');
             } catch (error) {
                 showToast('删除失败', 'error');
             }
@@ -1193,49 +1239,629 @@
         function copyKey() {
             const key = document.getElementById('generatedKeyValue').textContent;
             navigator.clipboard.writeText(key).then(() => {
-                showToast('Key 已复制到剪贴板', 'success');
-            }).catch(() => {
-                showToast('复制失败', 'error');
+                showToast('Key 已复制', 'success');
             });
         }
 
-        async function loadAdminInfo() {
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        async function loadConfigs() {
             try {
-                const response = await fetch('/api/admin/status', {
-                    headers: getHeaders()
-                });
-                
-                if (!response.ok && response.status === 401) {
-                    logout();
-                    return;
+                const response = await fetch('/api/configs', { headers: getHeaders() });
+                if (!response.ok) {
+                    if (response.status === 401) { logout(); return; }
+                    throw new Error('加载失败');
                 }
                 
-                const data = await response.json();
-                document.getElementById('adminUsername').textContent = data.username;
-                document.getElementById('adminLastLogin').textContent = data.lastLogin 
-                    ? new Date(data.lastLogin).toLocaleString('zh-CN')
-                    : '从未登录';
+                const configs = await response.json();
+                const configList = configs.configs || [];
+                
+                document.getElementById('contentArea').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">⚡ AI 配置列表</h2>
+                            <button class="btn btn-primary" onclick="showCreateConfigModal()">
+                                <span>+</span> 添加配置
+                            </button>
+                        </div>
+                        ${configList.length === 0 ? `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">⚡</div>
+                                <div class="empty-state-title">暂无配置</div>
+                                <div class="empty-state-desc">点击上方按钮添加 AI 配置</div>
+                            </div>
+                        ` : `
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>名称</th>
+                                            <th>提供商</th>
+                                            <th>模型</th>
+                                            <th>状态</th>
+                                            <th>创建时间</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${configList.map(c => `
+                                            <tr>
+                                                <td><strong>${c.name}</strong></td>
+                                                <td>${c.provider}</td>
+                                                <td>${c.model}</td>
+                                                <td>
+                                                    <span class="status-badge ${c.enabled ? 'enabled' : 'disabled'}">
+                                                        ${c.enabled ? '已启用' : '未启用'}
+                                                    </span>
+                                                </td>
+                                                <td>${new Date(c.createdAt).toLocaleString()}</td>
+                                                <td class="actions-cell">
+                                                    <button class="btn btn-sm btn-secondary" onclick="showEditConfigModal('${c.id}')">编辑</button>
+                                                    <button class="btn btn-sm ${c.enabled ? 'btn-danger' : 'btn-success'}" onclick="toggleConfig('${c.id}')">
+                                                        ${c.enabled ? '禁用' : '启用'}
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger" onclick="deleteConfig('${c.id}')">删除</button>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `}
+                    </div>
+                `;
             } catch (error) {
-                console.error('加载管理员信息失败:', error);
+                console.error('加载配置失败:', error);
             }
         }
 
-        async function changeAdminPassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newAdminPassword').value;
-            const confirmPassword = document.getElementById('confirmAdminPassword').value;
+        function showCreateConfigModal() {
+            document.getElementById('modalTitle').textContent = '添加 AI 配置';
+            document.getElementById('modalContent').innerHTML = `
+                <div class="form-group">
+                    <label class="form-label">配置名称</label>
+                    <input type="text" class="form-input" id="newConfigName" placeholder="例如：DeepSeek 配置">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">提供商</label>
+                    <select class="form-select" id="newConfigProvider" onchange="updateCreateConfigBaseUrl()">
+                        <option value="deepseek">DeepSeek</option>
+                        <option value="aliyun">阿里云百炼</option>
+                        <option value="openai">OpenAI</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" class="form-input" id="newConfigApiKey" placeholder="输入 API Key" style="flex: 1;">
+                        <button class="btn btn-secondary" onclick="fetchCreateConfigModels()" id="fetchModelsBtn" style="padding: 10px 16px; white-space: nowrap;">获取模型</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">API Base URL</label>
+                    <input type="text" class="form-input" id="newConfigBaseUrl" placeholder="https://api.deepseek.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">模型名称</label>
+                    <select class="form-select" id="newConfigModelSelect" style="margin-bottom: 8px;">
+                        <option value="">选择模型</option>
+                    </select>
+                    <input type="text" class="form-input" id="newConfigModelInput" placeholder="或手动输入模型，例如：deepseek-v4-flash">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" onclick="createConfig()">保存</button>
+                </div>
+            `;
+            updateCreateConfigBaseUrl();
+            document.getElementById('modalOverlay').classList.add('show');
+        }
+
+        function updateCreateConfigBaseUrl() {
+            const provider = document.getElementById('newConfigProvider').value;
+            const baseUrls = {
+                deepseek: 'https://api.deepseek.com',
+                aliyun: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+                openai: 'https://api.openai.com/v1'
+            };
+            document.getElementById('newConfigBaseUrl').value = baseUrls[provider] || '';
+        }
+
+        async function fetchCreateConfigModels() {
+            const baseUrl = document.getElementById('newConfigBaseUrl').value;
+            const apiKey = document.getElementById('newConfigApiKey').value;
+            const btn = document.getElementById('fetchModelsBtn');
             
-            if (!currentPassword) {
+            if (!baseUrl || !apiKey) {
+                showToast('请先填写 API Key 和 Base URL', 'warning');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '获取中...';
+
+            try {
+                const response = await fetch(`/api/models?baseUrl=${encodeURIComponent(baseUrl)}&apiKey=${encodeURIComponent(apiKey)}`);
+                const data = await response.json();
+
+                const select = document.getElementById('newConfigModelSelect');
+                if (data.code === 1 && data.models && data.models.length > 0) {
+                    select.innerHTML = '<option value="">选择模型</option>' + 
+                        data.models.map(m => `<option value="${m.id}">${m.id}</option>`).join('');
+                    showToast(`成功获取 ${data.models.length} 个模型`, 'success');
+                } else {
+                    showToast(data.msg || '获取模型失败', 'error');
+                }
+            } catch (error) {
+                showToast('获取模型失败: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '获取模型';
+            }
+        }
+
+        async function createConfig() {
+            const name = document.getElementById('newConfigName').value;
+            const provider = document.getElementById('newConfigProvider').value;
+            const apiKey = document.getElementById('newConfigApiKey').value;
+            const modelSelect = document.getElementById('newConfigModelSelect').value;
+            const modelInput = document.getElementById('newConfigModelInput').value;
+            const model = modelSelect || modelInput;
+            
+            if (!name || !apiKey || !model) {
+                showToast('请填写完整信息', 'error');
+                return;
+            }
+            
+            try {
+                const baseUrl = document.getElementById('newConfigBaseUrl').value;
+                
+                const response = await fetch('/api/configs', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        name,
+                        provider,
+                        apiKey,
+                        model,
+                        baseUrl: baseUrl,
+                        enabled: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('配置添加成功', 'success');
+                    loadPage('configs');
+                    closeModal();
+                } else {
+                    showToast(data.msg || '添加失败', 'error');
+                }
+            } catch (error) {
+                showToast('添加失败', 'error');
+            }
+        }
+
+        async function showEditConfigModal(id) {
+            try {
+                const response = await fetch(`/api/configs/${id}`, { headers: getHeaders() });
+                const config = await response.json();
+                
+                document.getElementById('modalTitle').textContent = '编辑配置';
+                document.getElementById('modalContent').innerHTML = `
+                    <input type="hidden" id="editConfigId" value="${config.id}">
+                    <div class="form-group">
+                        <label class="form-label">配置名称</label>
+                        <input type="text" class="form-input" id="editConfigName" value="${config.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">提供商</label>
+                        <select class="form-select" id="editConfigProvider" disabled>
+                            <option value="deepseek" ${config.provider === 'deepseek' ? 'selected' : ''}>DeepSeek</option>
+                            <option value="aliyun" ${config.provider === 'aliyun' ? 'selected' : ''}>阿里云百炼</option>
+                            <option value="openai" ${config.provider === 'openai' ? 'selected' : ''}>OpenAI</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" class="form-input" id="editConfigApiKey" value="${config.apiKey}" style="flex: 1;">
+                            <button class="btn btn-secondary" onclick="fetchEditConfigModels()" id="fetchEditModelsBtn" style="padding: 10px 16px; white-space: nowrap;">获取模型</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Base URL</label>
+                        <input type="text" class="form-input" id="editConfigBaseUrl" value="${config.baseUrl}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">模型名称</label>
+                        <select class="form-select" id="editConfigModelSelect" style="margin-bottom: 8px;">
+                            <option value="">选择模型</option>
+                        </select>
+                        <input type="text" class="form-input" id="editConfigModelInput" value="${config.model}" placeholder="或手动输入模型">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button class="btn btn-primary" onclick="saveConfig()">保存</button>
+                    </div>
+                `;
+                document.getElementById('modalOverlay').classList.add('show');
+            } catch (error) {
+                showToast('加载失败', 'error');
+            }
+        }
+
+        async function fetchEditConfigModels() {
+            const baseUrl = document.getElementById('editConfigBaseUrl').value;
+            const apiKey = document.getElementById('editConfigApiKey').value;
+            const btn = document.getElementById('fetchEditModelsBtn');
+            
+            if (!baseUrl || !apiKey) {
+                showToast('请先填写 API Key 和 Base URL', 'warning');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '获取中...';
+
+            try {
+                const response = await fetch(`/api/models?baseUrl=${encodeURIComponent(baseUrl)}&apiKey=${encodeURIComponent(apiKey)}`);
+                const data = await response.json();
+
+                const select = document.getElementById('editConfigModelSelect');
+                const currentModel = document.getElementById('editConfigModelInput').value;
+                if (data.code === 1 && data.models && data.models.length > 0) {
+                    select.innerHTML = '<option value="">选择模型</option>' + 
+                        data.models.map(m => `<option value="${m.id}" ${m.id === currentModel ? 'selected' : ''}>${m.id}</option>`).join('');
+                    showToast(`成功获取 ${data.models.length} 个模型`, 'success');
+                } else {
+                    showToast(data.msg || '获取模型失败', 'error');
+                }
+            } catch (error) {
+                showToast('获取模型失败: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '获取模型';
+            }
+        }
+
+        async function saveConfig() {
+            const id = document.getElementById('editConfigId').value;
+            const name = document.getElementById('editConfigName').value;
+            const apiKey = document.getElementById('editConfigApiKey').value;
+            const baseUrl = document.getElementById('editConfigBaseUrl').value;
+            const modelSelect = document.getElementById('editConfigModelSelect').value;
+            const modelInput = document.getElementById('editConfigModelInput').value;
+            const model = modelSelect || modelInput;
+            
+            try {
+                const response = await fetch(`/api/configs/${id}`, {
+                    method: 'PUT',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ name, apiKey, model, baseUrl })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('保存成功', 'success');
+                    loadPage('configs');
+                    closeModal();
+                } else {
+                    showToast(data.msg || '保存失败', 'error');
+                }
+            } catch (error) {
+                showToast('保存失败', 'error');
+            }
+        }
+
+        async function toggleConfig(id) {
+            try {
+                const response = await fetch(`/api/configs/${id}/enable`, {
+                    method: 'POST',
+                    headers: getHeaders()
+                });
+                
+                const data = await response.json();
+                showToast(data.msg, data.success ? 'success' : 'error');
+                loadPage('configs');
+            } catch (error) {
+                showToast('操作失败', 'error');
+            }
+        }
+
+        async function deleteConfig(id) {
+            if (!confirm('确定要删除这个配置吗？')) return;
+            
+            try {
+                const response = await fetch(`/api/configs/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                
+                const data = await response.json();
+                showToast(data.msg, data.success ? 'success' : 'error');
+                loadPage('configs');
+            } catch (error) {
+                showToast('删除失败', 'error');
+            }
+        }
+
+        function loadOcsConfig() {
+            document.getElementById('contentArea').innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📋 OCS 题库配置</h2>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">服务器地址</label>
+                        <input type="text" class="form-input" id="ocsServerUrl" placeholder="http://localhost:3000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="text" class="form-input" id="ocsApiKey" placeholder="ocs_xxxxxxxxxxxx">
+                    </div>
+                    <button class="btn btn-primary" onclick="generateOcsConfig()" style="margin-bottom: 16px;">
+                        <span>🔧</span> 生成配置代码
+                    </button>
+                    <div id="ocsConfigCode" style="display: none;">
+                        <div class="code-block">
+                            <pre id="configCodeContent"></pre>
+                        </div>
+                        <button class="btn btn-secondary" onclick="copyOcsConfig()" style="margin-top: 12px;">
+                            <span>📋</span> 复制配置代码
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateOcsConfig() {
+            const serverUrl = document.getElementById('ocsServerUrl').value || 'http://localhost:3000';
+            const apiKey = document.getElementById('ocsApiKey').value || 'YOUR_API_KEY';
+            
+            const config = `{
+  name: "AI智能搜题",
+  homepage: "${serverUrl}",
+  url: "${serverUrl}/api/answer",
+  method: "post",
+  type: "GM_xmlhttpRequest",
+  contentType: "json",
+  data: {
+    apiKey: "${apiKey}",
+    title: "\${title}",
+    options: "\${options}",
+    type: "\${type}"
+  },
+  handler: "return (res)=> res.code === 1 ? [res.title, res.answer] : undefined"
+}`;
+            
+            document.getElementById('configCodeContent').textContent = config;
+            document.getElementById('ocsConfigCode').style.display = 'block';
+            showToast('配置代码已生成', 'success');
+        }
+
+        function copyOcsConfig() {
+            const code = document.getElementById('configCodeContent').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('配置代码已复制', 'success');
+            });
+        }
+
+        async function loadApiTest() {
+            let apiKeysHtml = '<input type="text" class="form-input" id="testApiKey" placeholder="输入 API Key">';
+            try {
+                const response = await fetch('/api/admin/apikeys', { headers: getHeaders() });
+                if (response.ok) {
+                    const data = await response.json();
+                    const keys = data.keys || [];
+                    if (keys.length > 0) {
+                        apiKeysHtml = `
+                            <select class="form-select" id="testApiKeySelect" onchange="toggleTestApiKeyInput()">
+                                <option value="">选择已存在的 Key</option>
+                                ${keys.map(k => `<option value="${k.key}">${k.alias} (${k.key.substring(0, 12)}...)</option>`).join('')}
+                                <option value="custom">手动输入</option>
+                            </select>
+                            <input type="text" class="form-input" id="testApiKeyCustom" placeholder="输入 API Key" style="display: none; margin-top: 8px;">
+                        `;
+                    }
+                }
+            } catch (e) {}
+
+            document.getElementById('contentArea').innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🧪 API 接口测试</h2>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        ${apiKeysHtml}
+                        <div style="font-size: 12px; color: var(--warning); margin-top: 4px;">⚠️ 必须填写有效的 API Key 才能调用接口</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">题目内容</label>
+                        <input type="text" class="form-input" id="testTitle" placeholder="输入题目内容...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">选项（可选）</label>
+                        <textarea class="form-input" id="testOptions" placeholder="A. 选项1&#10;B. 选项2&#10;C. 选项3&#10;D. 选项4" style="min-height: 80px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">题目类型</label>
+                        <select class="form-select" id="testType">
+                            <option value="single">单选题</option>
+                            <option value="multiple">多选题</option>
+                            <option value="judgement">判断题</option>
+                            <option value="completion">填空题</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="sendApiTest()" style="width: 100%;">
+                        <span>🚀</span> 发送测试请求
+                    </button>
+                    <div id="testResult" style="display: none; margin-top: 20px;">
+                        <div class="card" style="margin-bottom: 0; background: var(--bg-secondary);">
+                            <div class="card-header">
+                                <h3 class="card-title" style="font-size: 14px;">📡 响应结果</h3>
+                                <span class="status-badge" id="testStatus"></span>
+                            </div>
+                            <div class="code-block" style="margin: 0;">
+                                <pre id="testResponse"></pre>
+                            </div>
+                            <div id="answerHighlight" style="display: none; margin-top: 16px; padding: 16px; background: rgba(30, 64, 175, 0.1); border: 1px solid rgba(30, 64, 175, 0.2); border-radius: var(--radius-md);">
+                                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">✨ AI 答案</div>
+                                <div style="font-size: 18px; font-weight: 600; color: var(--primary);" id="answerText"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleTestApiKeyInput() {
+            const select = document.getElementById('testApiKeySelect');
+            const customInput = document.getElementById('testApiKeyCustom');
+            if (select && customInput) {
+                customInput.style.display = select.value === 'custom' ? 'block' : 'none';
+            }
+        }
+
+        async function sendApiTest() {
+            let apiKey = '';
+            const select = document.getElementById('testApiKeySelect');
+            if (select) {
+                apiKey = select.value === 'custom' ? document.getElementById('testApiKeyCustom').value : select.value;
+            } else {
+                apiKey = document.getElementById('testApiKey').value;
+            }
+            const title = document.getElementById('testTitle').value;
+            const options = document.getElementById('testOptions').value;
+            const type = document.getElementById('testType').value;
+
+            if (!apiKey) {
+                showToast('请填写 API Key', 'error');
+                return;
+            }
+
+            const testResult = document.getElementById('testResult');
+            const testStatus = document.getElementById('testStatus');
+            const testResponse = document.getElementById('testResponse');
+            const answerHighlight = document.getElementById('answerHighlight');
+            const answerText = document.getElementById('answerText');
+
+            testResult.style.display = 'block';
+            testStatus.textContent = '处理中...';
+            testStatus.className = 'status-badge';
+            testResponse.textContent = '正在请求...';
+            answerHighlight.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/answer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ apiKey, title, options, type })
+                });
+
+                const data = await response.json();
+                
+                if (data.code === 1) {
+                    testStatus.textContent = '✓ 成功';
+                    testStatus.className = 'status-badge enabled';
+                    testResponse.textContent = JSON.stringify(data, null, 2);
+                    answerText.textContent = data.answer;
+                    answerHighlight.style.display = 'block';
+                    showToast('请求成功', 'success');
+                } else {
+                    testStatus.textContent = '✕ 失败';
+                    testStatus.className = 'status-badge disabled';
+                    testResponse.textContent = JSON.stringify(data, null, 2);
+                    showToast(data.msg || '请求失败', 'error');
+                }
+            } catch (error) {
+                testStatus.textContent = '✕ 错误';
+                testStatus.className = 'status-badge disabled';
+                testResponse.textContent = `错误: ${error.message}`;
+                showToast('请求错误', 'error');
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await fetch('/api/admin/status', { headers: getHeaders() });
+                if (!response.ok) {
+                    if (response.status === 401) { logout(); return; }
+                    throw new Error('加载失败');
+                }
+                
+                const admin = await response.json();
+                
+                document.getElementById('contentArea').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🔐 管理员账户</h2>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+                            <div class="stat-card">
+                                <div class="stat-icon primary">👤</div>
+                                <div class="stat-content">
+                                    <div class="stat-value">${admin.username}</div>
+                                    <div class="stat-label">用户名</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon info">📅</div>
+                                <div class="stat-content">
+                                    <div class="stat-value">${admin.lastLogin ? new Date(admin.lastLogin).toLocaleString() : '从未登录'}</div>
+                                    <div class="stat-label">最后登录</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">🔑 修改密码</h2>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">当前密码</label>
+                            <input type="password" class="form-input" id="currentPwd" placeholder="输入当前密码">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">新密码</label>
+                            <input type="password" class="form-input" id="newPwd" placeholder="输入新密码（至少6位）">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">确认密码</label>
+                            <input type="password" class="form-input" id="confirmPwd" placeholder="再次输入新密码">
+                        </div>
+                        <button class="btn btn-primary" onclick="changePassword()">
+                            <span>💾</span> 修改密码
+                        </button>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('加载设置失败:', error);
+            }
+        }
+
+        async function changePassword() {
+            const currentPwd = document.getElementById('currentPwd').value;
+            const newPwd = document.getElementById('newPwd').value;
+            const confirmPwd = document.getElementById('confirmPwd').value;
+            
+            if (!currentPwd) {
                 showToast('请输入当前密码', 'error');
                 return;
             }
             
-            if (!newPassword || newPassword.length < 6) {
+            if (newPwd.length < 6) {
                 showToast('新密码至少需要6位', 'error');
                 return;
             }
             
-            if (newPassword !== confirmPassword) {
+            if (newPwd !== confirmPwd) {
                 showToast('两次输入的密码不一致', 'error');
                 return;
             }
@@ -1246,8 +1872,8 @@
                     headers: getHeaders(),
                     body: JSON.stringify({
                         username: 'admin',
-                        oldPassword: currentPassword,
-                        newPassword
+                        oldPassword: currentPwd,
+                        newPassword: newPwd
                     })
                 });
                 
@@ -1255,20 +1881,18 @@
                 
                 if (data.success) {
                     showToast('密码修改成功', 'success');
-                    document.getElementById('currentPassword').value = '';
-                    document.getElementById('newAdminPassword').value = '';
-                    document.getElementById('confirmAdminPassword').value = '';
+                    document.getElementById('currentPwd').value = '';
+                    document.getElementById('newPwd').value = '';
+                    document.getElementById('confirmPwd').value = '';
                 } else {
                     showToast(data.msg || '修改失败', 'error');
                 }
             } catch (error) {
-                showToast('网络错误', 'error');
+                showToast('修改失败', 'error');
             }
         }
 
-        loadTheme();
         loadStats();
-        loadAdminInfo();
     </script>
 </body>
 </html>

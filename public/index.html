@@ -6,51 +6,36 @@
     <title>OCS AI 题库配置中心</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-card: #1a1a24;
-            --bg-input: #0d0d14;
-            --accent-primary: #6366f1;
-            --accent-secondary: #8b5cf6;
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
-            --border: #2d2d3a;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        .light-theme {
-            --bg-primary: #f8fafc;
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --primary-light: #3b82f6;
+            --primary-lighter: #60a5fa;
+            --success: #059669;
+            --error: #dc2626;
+            --warning: #d97706;
+            --info: #0284c7;
+            --bg-primary: #eff6ff;
             --bg-secondary: #ffffff;
             --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --accent-primary: #6366f1;
-            --accent-secondary: #8b5cf6;
-            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --bg-input: #f0f9ff;
             --text-primary: #1e293b;
-            --text-secondary: #64748b;
+            --text-secondary: #475569;
             --text-muted: #94a3b8;
-            --success: #10b981;
-            --error: #ef4444;
-            --warning: #f59e0b;
-            --border: #e2e8f0;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --border: #dbeafe;
+            --border-light: #e0f2fe;
+            --shadow-sm: 0 1px 2px rgba(30, 64, 175, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(30, 64, 175, 0.1), 0 2px 4px -2px rgba(30, 64, 175, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(30, 64, 175, 0.15), 0 4px 6px -4px rgba(30, 64, 175, 0.1);
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -61,74 +46,73 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 40px 24px;
-        }
-
-        /* Header */
-        .header {
+            padding: 60px 24px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 48px;
-            padding-bottom: 32px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 16px;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--accent-gradient);
-            border-radius: 12px;
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary-lighter) 100%);
+            border-radius: var(--radius-xl);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            box-shadow: var(--card-shadow);
+            font-size: 36px;
+            box-shadow: 0 8px 32px rgba(30, 64, 175, 0.4);
+            margin-bottom: 32px;
+            animation: float 3s ease-in-out infinite;
         }
 
-        .logo-text h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 28px;
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .title {
+            font-size: 32px;
             font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-align: center;
         }
 
-        .logo-text p {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-top: 2px;
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
         }
 
         .status-badge {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: var(--bg-card);
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .status-badge:hover {
-            border-color: var(--accent-primary);
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 24px;
+            background: var(--bg-input);
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: var(--success);
             animation: pulse 2s infinite;
@@ -140,1985 +124,164 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4); }
+            50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(5, 150, 105, 0); }
         }
 
         .status-text {
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .theme-toggle:hover {
-            background: var(--accent-primary);
-            border-color: var(--accent-primary);
-            transform: scale(1.1);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
-
-        /* Grid Layout */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        @media (max-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Cards */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px;
-            transition: all 0.3s;
-        }
-
-        .card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: var(--card-shadow);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .card-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        /* Form Groups */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             color: var(--text-secondary);
-            margin-bottom: 8px;
         }
 
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-family: 'JetBrains Mono', monospace;
-            transition: all 0.2s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        textarea.form-input {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .input-with-icon {
-            position: relative;
-        }
-
-        .input-with-icon .form-input {
-            padding-right: 48px;
-        }
-
-        .input-toggle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .input-toggle:hover {
-            color: var(--text-primary);
-        }
-
-        /* Select */
-        .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        /* Buttons */
         .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             border: none;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            text-decoration: none;
         }
 
         .btn-primary {
-            background: var(--accent-gradient);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 14px rgba(30, 64, 175, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.5);
         }
 
         .btn-secondary {
-            background: transparent;
+            background: var(--bg-input);
             color: var(--text-primary);
             border: 1px solid var(--border);
+            margin-top: 12px;
         }
 
         .btn-secondary:hover {
-            border-color: var(--accent-primary);
-            background: rgba(99, 102, 241, 0.1);
+            background: var(--border);
         }
 
-        .btn-group {
-            display: flex;
-            gap: 12px;
+        .info-section {
             margin-top: 24px;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Code Block */
-        .code-block {
+            padding: 16px;
             background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.8;
-            overflow-x: auto;
-            position: relative;
+            border-radius: var(--radius-md);
         }
 
-        .code-block pre {
-            margin: 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .code-actions {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-icon {
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            border-radius: 6px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .btn-icon:hover {
-            background: var(--accent-primary);
-            color: white;
-            border-color: var(--accent-primary);
-        }
-
-        /* Config Manager */
-        .config-list {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            overflow: hidden;
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .config-list-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .config-list-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px;
-        }
-
-        .config-item {
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 4px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .config-item:hover {
-            background: var(--bg-card);
-        }
-
-        .config-item.active {
-            background: rgba(99, 102, 241, 0.15);
-            border-left: 3px solid var(--accent-primary);
-        }
-
-        .config-item-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        .config-item-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .config-item-name {
-            font-weight: 500;
-            font-size: 13px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .config-item-url {
-            font-size: 11px;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 2px;
-        }
-
-        .config-item-delete {
-            opacity: 0;
-            transition: opacity 0.2s;
-            padding: 4px;
-        }
-
-        .config-item:hover .config-item-delete {
-            opacity: 1;
-        }
-
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: var(--error);
-        }
-
-        .btn-danger:hover {
-            background: rgba(239, 68, 68, 0.2);
-            border-color: var(--error);
-        }
-
-        /* Full Width Card */
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        /* Test Result */
-        .test-result {
-            margin-top: 24px;
-            padding: 20px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .test-result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .test-result-title {
+        .info-title {
             font-size: 14px;
             font-weight: 600;
             color: var(--text-secondary);
-        }
-
-        .test-status {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .test-status.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .test-status.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-        }
-
-        .test-response {
-            background: var(--bg-input);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .answer-highlight {
-            margin-top: 16px;
-            padding: 16px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 8px;
-        }
-
-        .answer-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .answer-text {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--accent-primary);
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        /* Loading */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--text-muted);
-            border-top-color: var(--accent-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            padding: 16px 24px;
-            border-radius: 8px;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
-            transform: translateX(120%);
-            transition: transform 0.3s;
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            background: var(--success);
-        }
-
-        .toast.error {
-            background: var(--error);
-        }
-
-        .toast.info {
-            background: var(--accent-primary);
-        }
-
-        /* Accordion */
-        .accordion {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 24px;
-        }
-
-        .accordion-item {
-            border-bottom: 1px solid var(--border);
-        }
-
-        .accordion-item:last-child {
-            border-bottom: none;
-        }
-
-        .accordion-header {
-            padding: 16px 20px;
-            background: var(--bg-secondary);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .accordion-header:hover {
-            background: var(--bg-card);
-        }
-
-        .accordion-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .accordion-icon {
-            transition: transform 0.3s;
-        }
-
-        .accordion-item.active .accordion-icon {
-            transform: rotate(180deg);
-        }
-
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s;
-        }
-
-        .accordion-item.active .accordion-content {
-            max-height: 500px;
-        }
-
-        .accordion-body {
-            padding: 20px;
-            background: var(--bg-primary);
-        }
-
-        /* Help Section */
-        .help-section {
-            margin-top: 32px;
-        }
-
-        .help-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .help-content {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .help-content h4 {
-            color: var(--text-primary);
-            margin: 16px 0 8px 0;
-            font-size: 15px;
-        }
-
-        .help-content p {
-            margin-bottom: 8px;
-        }
-
-        .help-content ul {
-            margin-left: 20px;
             margin-bottom: 12px;
         }
 
-        .help-content li {
-            margin-bottom: 4px;
-        }
-
-        .help-content code {
-            background: var(--bg-input);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-        }
-
-        /* Model Section */
-        .model-section {
-            margin-top: 8px;
-        }
-
-        .model-search-bar {
+        .info-item {
             display: flex;
+            align-items: center;
             gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .model-list-container {
-            background: var(--bg-primary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .model-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--bg-secondary);
             font-size: 13px;
-            font-weight: 500;
-        }
-
-        .model-count {
-            background: var(--accent-primary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-
-        .model-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .model-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border);
-            transition: background 0.2s;
-        }
-
-        .model-item:hover {
-            background: var(--bg-secondary);
-        }
-
-        .model-item:last-child {
-            border-bottom: none;
-        }
-
-        .model-item-info {
-            flex: 1;
-        }
-
-        .model-item-name {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .model-item-id {
-            font-size: 12px;
             color: var(--text-muted);
-            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 8px;
         }
 
-        .model-item-status {
-            margin-right: 12px;
-            font-size: 14px;
+        .info-item:last-child {
+            margin-bottom: 0;
         }
 
-        .model-item-status.on {
-            color: #10b981;
+        .info-icon {
+            font-size: 16px;
         }
 
-        .model-item-status.off {
-            color: #6b7280;
-        }
-
-        .model-item-actions {
-            display: flex;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .model-item:hover .model-item-actions {
-            opacity: 1;
-        }
-
-        .model-action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 4px;
-            transition: background 0.2s;
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 13px;
             color: var(--text-muted);
         }
 
-        .model-action-btn:hover {
-            background: var(--bg-card);
-            color: var(--text-primary);
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
         }
 
-        /* Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-in {
-            animation: fadeInUp 0.5s ease-out forwards;
-        }
-
-        .delay-1 { animation-delay: 0.1s; opacity: 0; }
-        .delay-2 { animation-delay: 0.2s; opacity: 0; }
-        .delay-3 { animation-delay: 0.3s; opacity: 0; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 24px 16px;
-            }
-
-            .header {
-                flex-direction: column;
-                gap: 16px;
-                text-align: center;
-            }
-
-            .logo-section {
-                flex-direction: column;
-            }
-
-            .main-grid {
-                gap: 16px;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-primary);
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <header class="header animate-in">
-            <div class="logo-section">
-                <div class="logo-icon">🤖</div>
-                <div class="logo-text">
-                    <h1>OCS AI 题库配置中心</h1>
-                    <p>智能搜题后端管理平台</p>
-                </div>
-            </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">
-                    <span id="themeIcon">🌙</span>
-                </button>
-                <button class="btn btn-secondary" onclick="goToAdmin()" id="adminBtn" style="display: none;">
-                    <span>🔐</span> 管理后台
-                </button>
-                <div class="status-badge" id="statusBadge" onclick="checkHealth()">
-                    <div class="status-dot" id="statusDot"></div>
-                    <span class="status-text" id="statusText">检查中...</span>
-                </div>
-            </div>
-        </header>
+        <div class="logo-icon">🤖</div>
+        <h1 class="title">OCS AI 题库配置中心</h1>
+        <p class="subtitle">智能搜题后端管理平台</p>
 
-        <!-- Main Content -->
-        <div class="main-grid">
-            <!-- Configuration Manager Card -->
-            <div class="card animate-in delay-1" style="grid-column: 1 / -1;">
-                <div class="card-header">
-                    <div class="card-icon">📦</div>
-                    <h2 class="card-title">配置管理</h2>
-                    <button class="btn btn-primary" onclick="addNewConfig()" style="margin-left: auto;">
-                        <span>+</span> 新增配置
-                    </button>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px; margin-top: 20px;">
-                    <!-- Config List -->
-                    <div class="config-list" id="configList">
-                        <div class="config-list-header">
-                            <span>配置列表</span>
-                            <span style="font-size: 12px; color: var(--text-muted);">共 <span id="configCount">0</span> 个</span>
-                        </div>
-                        <div class="config-list-content" id="configListContent">
-                            <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                                <div style="font-size: 32px; margin-bottom: 8px;">📭</div>
-                                <div>暂无配置</div>
-                                <div style="font-size: 12px; margin-top: 8px;">点击上方按钮添加配置</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Config Detail -->
-                    <div class="config-detail" id="configDetail">
-                        <div style="padding: 20px; background: var(--bg-secondary); border-radius: 12px;">
-                            <div id="configDetailEmpty" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                                <div style="font-size: 32px; margin-bottom: 8px;">👈</div>
-                                <div>选择一个配置进行编辑</div>
-                            </div>
-                            <div id="configDetailForm" style="display: none;">
-                                <div class="form-group">
-                                    <label class="form-label">配置名称</label>
-                                    <input type="text" class="form-input" id="editConfigName" placeholder="输入配置名称">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">API Key</label>
-                                    <div class="input-with-icon">
-                                        <input type="password" class="form-input" id="editApiKey" placeholder="sk-xxxxxxxxxxxxxxxx">
-                                        <button class="input-toggle" onclick="togglePassword('editApiKey')">
-                                            <span id="editApiKeyIcon">👁️</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">API Base URL</label>
-                                    <input type="text" class="form-input" id="editApiBaseUrl" placeholder="https://api.openai.com/v1">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">模型</label>
-                                    <div class="model-section">
-                                        <div class="model-search-bar">
-                                            <select class="form-select" id="modelSelector" style="flex: 1;" onchange="onModelSelected()">
-                                                <option value="">-- 请先获取模型列表 --</option>
-                                            </select>
-                                            <button class="btn btn-secondary" onclick="fetchModelsForConfig()">
-                                                <span>🔄</span> 获取模型列表
-                                            </button>
-                                        </div>
-                                        <div id="selectedModelInfo" style="margin-top: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 8px; font-size: 13px; display: none;">
-                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                <span style="color: #10b981;">✓</span>
-                                                <span>已选择: <strong id="selectedModelName"></strong></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="btn-group" style="margin-top: 24px;">
-                                    <button class="btn btn-secondary" id="testLatencyBtn" onclick="testConfigLatency()" style="display: none;">
-                                        <span>📡</span> 测试延迟
-                                    </button>
-                                    <button class="btn btn-primary" onclick="saveEditedConfig()">
-                                        <span>💾</span> 保存修改
-                                    </button>
-                                    <button class="btn btn-secondary" onclick="cancelEdit()">
-                                        <span>❌</span> 取消
-                                    </button>
-                                    <button class="btn btn-danger" onclick="deleteConfig()">
-                                        <span>🗑️</span> 删除
-                                    </button>
-                                </div>
-                                <div id="latencyResult" style="margin-top: 16px; display: none;">
-                                    <div style="padding: 12px; background: var(--bg-secondary); border-radius: 8px; font-size: 13px;">
-                                        <span style="color: var(--text-muted);">延迟测试结果:</span>
-                                        <span id="latencyValue" style="font-weight: 600; margin-left: 8px;"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="card">
+            <div class="status-badge" id="statusBadge">
+                <div class="status-dot" id="statusDot"></div>
+                <span class="status-text" id="statusText">检查中...</span>
             </div>
 
-            <!-- API Test Card -->
-            <div class="card animate-in delay-2">
-                <div class="card-header">
-                    <div class="card-icon">🧪</div>
-                    <h2 class="card-title">API 测试工具</h2>
+            <a href="/login.html" class="btn btn-primary" id="adminBtn">
+                <span>🔐</span> 进入管理后台
+            </a>
+
+            <div class="info-section">
+                <div class="info-title">快速开始</div>
+                <div class="info-item">
+                    <span class="info-icon">1️⃣</span>
+                    <span>登录管理后台，配置 AI 提供商</span>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">题目内容</label>
-                    <input type="text" class="form-input" id="testTitle" placeholder="输入题目内容...">
+                <div class="info-item">
+                    <span class="info-icon">2️⃣</span>
+                    <span>生成 API Key 用于接口调用</span>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">选项（可选）</label>
-                    <textarea class="form-input" id="testOptions" placeholder="A. 选项1&#10;B. 选项2&#10;C. 选项3&#10;D. 选项4"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">题目类型</label>
-                    <select class="form-select" id="testType">
-                        <option value="single">单选题</option>
-                        <option value="multiple">多选题</option>
-                        <option value="judgement">判断题</option>
-                        <option value="completion">填空题</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">使用配置</label>
-                    <select class="form-select" id="testConfigSelect">
-                        <option value="">-- 选择配置（可选）--</option>
-                    </select>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">选择配置后将使用该配置的API进行测试</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">API Key（必填）</label>
-                    <input type="text" class="form-input" id="testApiKey" placeholder="在管理后台生成的 API Key" style="font-family: 'JetBrains Mono', monospace;">
-                    <div style="font-size: 12px; color: var(--warning); margin-top: 4px;">⚠️ 必须填写有效的 API Key 才能调用接口</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">请求方式</label>
-                    <select class="form-select" id="requestMethod">
-                        <option value="post" selected>POST</option>
-                    </select>
-                </div>
-
-                <button class="btn btn-primary" style="width: 100%;" id="testBtn" onclick="sendTest()">
-                    <span>🚀</span> 发送测试请求
-                </button>
-
-                <!-- Test Result -->
-                <div class="test-result" id="testResult" style="display: none;">
-                    <div class="test-result-header">
-                        <span class="test-result-title">响应结果</span>
-                        <span class="test-status" id="testStatus"></span>
-                    </div>
-                    <div class="test-response" id="testResponse"></div>
-                    <div class="answer-highlight" id="answerHighlight" style="display: none;">
-                        <div class="answer-label">✨ AI 答案</div>
-                        <div class="answer-text" id="answerText"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- OCS Config Generator -->
-            <div class="card full-width animate-in delay-3">
-                <div class="card-header">
-                    <div class="card-icon">📋</div>
-                    <h2 class="card-title">OCS 题库配置代码</h2>
-                </div>
-
-                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
-                    将以下配置复制到 OCS 刷题脚本的题库配置中，即可使用 AI 智能搜题功能。
-                </p>
-
-                <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label class="form-label">🌐 服务器地址</label>
-                        <input type="text" class="form-input" id="serverHost" placeholder="输入你的服务器IP或域名" value="http://localhost:3000" oninput="updateOCSConfig()">
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">输入你的服务器地址，配置代码将自动更新</div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="form-label">🔑 API Key</label>
-                        <input type="text" class="form-input" id="ocsApiKey" placeholder="在管理后台生成的 API Key" oninput="updateOCSConfig()">
-                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">必须填写有效的 API Key 才能调用接口</div>
-                    </div>
-                </div>
-
-                <div class="code-block">
-                    <div class="code-actions">
-                        <button class="btn-icon" onclick="copyCode()" title="复制代码">📋</button>
-                        <button class="btn-icon" onclick="updateOCSConfig()" title="刷新配置">🔄</button>
-                    </div>
-                    <pre id="ocsConfig">[
-    {
-        "name": "AI智能搜题",
-        "homepage": "http://localhost:3000",
-        "url": "http://localhost:3000/api/answer",
-        "method": "post",
-        "type": "GM_xmlhttpRequest",
-        "contentType": "json",
-        "data": {
-            "apiKey": "你的APIKey",
-            "title": "${title}",
-            "options": "${options}",
-            "type": "${type}"
-        },
-        "handler": "return (res)=> res.code === 1 ? [res.question, res.answer] : undefined"
-    }
-]</pre>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-primary" onclick="copyCode()">
-                        <span>📋</span> 复制配置代码
-                    </button>
-                </div>
-            </div>
-
-            <!-- Help Section -->
-            <div class="card full-width help-section">
-                <h3 class="help-title">❓ 使用帮助</h3>
-
-                <div class="accordion">
-                    <div class="accordion-item active">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">🚀 快速开始</span>
-                            <span class="accordion-icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <div class="accordion-body help-content">
-                                <h4>步骤 1: 添加配置</h4>
-                                <p>点击左上角「新增配置」按钮，填写 AI 提供商的 API 信息。</p>
-                                
-                                <h4>步骤 2: 选择模型</h4>
-                                <p>点击「获取模型列表」，从下拉菜单中选择要使用的模型，然后保存。</p>
-                                
-                                <h4>步骤 3: 启用配置</h4>
-                                <p>在配置列表中找到刚保存的配置，点击 ✓ 按钮启用。启用后外部 API 调用将自动使用此配置。</p>
-                                
-                                <h4>步骤 4: 配置 OCS</h4>
-                                <p>在下方「OCS 题库配置代码」区域填入服务器地址，点击复制，然后添加到 OCS 刷题脚本中。</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">🤖 支持的 AI 提供商</span>
-                            <span class="accordion-icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <div class="accordion-body help-content">
-                                <h4>DeepSeek</h4>
-                                <ul>
-                                    <li>Base URL: <code>https://api.deepseek.com</code></li>
-                                    <li>推荐模型: deepseek-v4-flash（高性价比）</li>
-                                    <li>适用场景: 通用问答、刷题</li>
-                                </ul>
-                                
-                                <h4>阿里云百炼</h4>
-                                <ul>
-                                    <li>Base URL: <code>https://dashscope.aliyuncs.com/compatible-mode/v1</code></li>
-                                    <li>推荐模型: qwen-plus、qwen-turbo</li>
-                                    <li>适用场景: 中文问答、代码</li>
-                                </ul>
-                                
-                                <h4>OpenAI</h4>
-                                <ul>
-                                    <li>Base URL: <code>https://api.openai.com/v1</code></li>
-                                    <li>推荐模型: gpt-4o-mini</li>
-                                    <li>适用场景: 通用问答</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">🔧 配置管理说明</span>
-                            <span class="accordion-icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <div class="accordion-body help-content">
-                                <h4>启用 vs 非启用</h4>
-                                <p>可以添加多个配置，但在任意时刻只能有一个配置处于「已启用」状态。</p>
-                                <p>启用后的配置会被外部 API 调用自动使用，无需每次传递参数。</p>
-                                
-                                <h4>测试延迟</h4>
-                                <p>选择配置后点击「测试延迟」按钮，可以检查 API 连接状态和响应速度。</p>
-                                
-                                <h4>删除配置</h4>
-                                <p>点击配置项右侧的 🗑️ 按钮删除配置。删除后需要重新添加。</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">📋 OCS 配置说明</span>
-                            <span class="accordion-icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <div class="accordion-body help-content">
-                                <h4>服务器地址</h4>
-                                <p>在 OCS 题库配置代码区域填入你的服务器地址，格式如：<code>http://103.39.66.30:45419</code></p>
-                                
-                                <h4>请求方法</h4>
-                                <p>推荐使用 <code>POST</code> 请求，数据放在请求体中传输。</p>
-                                
-                                <h4>handler 函数</h4>
-                                <p>handler 负责解析 API 响应：</p>
-                                <ul>
-                                    <li><code>res.code === 1</code> 表示成功</li>
-                                    <li>返回 <code>[res.title, res.answer]</code> 格式</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item">
-                        <div class="accordion-header" onclick="toggleAccordion(this)">
-                            <span class="accordion-title">❌ 常见问题</span>
-                            <span class="accordion-icon">▼</span>
-                        </div>
-                        <div class="accordion-content">
-                            <div class="accordion-body help-content">
-                                <h4>Q: AI 功能不可用？</h4>
-                                <p>A: 检查是否已启用配置（列表中显示「已启用」标签）。</p>
-                                
-                                <h4>Q: 请求超时？</h4>
-                                <p>A: AI 生成答案需要几秒钟，请耐心等待。检查网络连接。</p>
-                                
-                                <h4>Q: 如何更新服务器？</h4>
-                                <p>A: <code>git pull</code> 后重启服务即可。</p>
-                                
-                                <h4>Q: 配置数据保存在哪？</h4>
-                                <p>A: 配置保存在 <code>data/configs.json</code> 文件中，重启服务后数据保留。</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="info-item">
+                    <span class="info-icon">3️⃣</span>
+                    <span>复制配置代码到 OCS 刷题脚本</span>
                 </div>
             </div>
         </div>
+
+        <div class="footer">
+            <a href="/login.html">管理后台登录</a>
+            · 
+            <span>支持 DeepSeek / 阿里云百炼 / OpenAI</span>
+        </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
-
     <script>
-        // Configuration state
-        let config = {
-            apiKey: '',
-            apiBaseUrl: 'https://api.openai.com/v1',
-            aiModel: 'gpt-3.5-turbo',
-            serverPort: 3000,
-            serverHost: '0.0.0.0'
-        };
-
-        // Currently selected config ID
-        let selectedConfigId = null;
-        
-        // Currently enabled config ID
-        let enabledConfigId = null;
-        
-        // Global error handler
-        window.addEventListener('error', function(e) {
-            console.error('❌ 全局错误:', e.message, 'at', e.filename, 'line', e.lineno);
-        });
-        
-        window.addEventListener('unhandledrejection', function(e) {
-            console.error('❌ 未处理的Promise错误:', e.reason);
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('🚀 页面初始化开始');
-            loadTheme();
-            loadServerHost();
-            checkAuth();
-            checkHealth();
-            console.log('📦 调用loadConfigs...');
-            loadConfigs();
-            console.log('✅ 页面初始化完成');
-        });
-
-        function checkAuth() {
-            const token = localStorage.getItem('adminToken');
-            const adminBtn = document.getElementById('adminBtn');
-            if (token) {
-                adminBtn.style.display = 'flex';
-            } else {
-                adminBtn.style.display = 'none';
-            }
-        }
-
-        function goToAdmin() {
-            const token = localStorage.getItem('adminToken');
-            if (token) {
-                window.location.href = '/admin.html';
-            } else {
-                window.location.href = '/login.html';
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('adminToken');
-            checkAuth();
-            showToast('已退出登录', 'info');
-        }
-
-        // === Config Management ===
-        async function loadConfigs() {
-            console.log('🔄 开始加载配置列表...');
-            try {
-                const response = await fetch('/api/configs');
-                console.log('📡 API响应状态:', response.status);
-                const data = await response.json();
-                console.log('📋 API返回数据:', data);
-                
-                if (data.code === 1) {
-                    console.log('📦 渲染配置列表，数量:', data.configs.length);
-                    renderConfigList(data.configs);
-                    updateTestConfigSelect(data.configs);
-                    
-                    // 加载启用的配置
-                    await loadEnabledConfig();
-                }
-            } catch (error) {
-                console.error('❌ 加载配置列表失败:', error);
-            }
-        }
-        
-        async function loadEnabledConfig() {
-            try {
-                const response = await fetch('/api/configs/enabled');
-                const data = await response.json();
-                if (data.code === 1 && data.config) {
-                    window.enabledConfigId = data.config.id;
-                    enabledConfigId = data.config.id;
-                    console.log(`📦 已启用配置: ${data.config.name}`);
-                    // 重新渲染列表以显示启用状态
-                    const configs = await fetch('/api/configs').then(r => r.json());
-                    if (configs.code === 1) {
-                        renderConfigList(configs.configs);
-                    }
-                } else {
-                    window.enabledConfigId = null;
-                    enabledConfigId = null;
-                }
-            } catch (error) {
-                console.error('❌ 加载启用配置失败:', error);
-            }
-        }
-        
-        async function enableConfig(id) {
-            try {
-                const response = await fetch(`/api/configs/${id}/enable`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                
-                if (data.code === 1) {
-                    showToast(`已启用配置: ${data.config.name}`, 'success');
-                    window.enabledConfigId = id;
-                    enabledConfigId = id;
-                    // 重新渲染列表
-                    await loadConfigs();
-                } else {
-                    showToast(data.msg || '启用失败', 'error');
-                }
-            } catch (error) {
-                console.error('❌ 启用配置失败:', error);
-                showToast('启用配置失败', 'error');
-            }
-        }
-        
-        async function disableConfig(id) {
-            try {
-                const response = await fetch(`/api/configs/${id}/disable`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                
-                if (data.code === 1) {
-                    showToast('已禁用配置', 'success');
-                    window.enabledConfigId = null;
-                    enabledConfigId = null;
-                    // 重新渲染列表
-                    await loadConfigs();
-                } else {
-                    showToast(data.msg || '禁用失败', 'error');
-                }
-            } catch (error) {
-                console.error('❌ 禁用配置失败:', error);
-                showToast('禁用配置失败', 'error');
-            }
-        }
-        
-        function updateTestConfigSelect(configs) {
-            const select = document.getElementById('testConfigSelect');
-            if (!select) return;
-            
-            select.innerHTML = '<option value="">-- 选择配置（可选）--</option>';
-            
-            configs.forEach(cfg => {
-                const option = document.createElement('option');
-                option.value = JSON.stringify({
-                    apiKey: cfg.apiKey,
-                    baseUrl: cfg.baseUrl,
-                    model: cfg.model
-                });
-                option.textContent = cfg.name;
-                select.appendChild(option);
-            });
-        }
-
-        function renderConfigList(configs) {
-            console.log('🎨 renderConfigList被调用，configs:', configs);
-            const container = document.getElementById('configListContent');
-            const count = document.getElementById('configCount');
-            
-            count.textContent = configs.length;
-            
-            if (configs.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-                        <div style="font-size: 32px; margin-bottom: 8px;">📭</div>
-                        <div>暂无配置</div>
-                        <div style="font-size: 12px; margin-top: 8px;">点击上方按钮添加配置</div>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = configs.map(cfg => {
-                const icon = getProviderIcon(cfg.baseUrl);
-                const bgColor = getProviderColor(cfg.baseUrl);
-                const isEnabled = cfg.id === window.enabledConfigId;
-                return `
-                    <div class="config-item ${selectedConfigId === cfg.id ? 'active' : ''}" onclick="selectConfig('${cfg.id}')">
-                        <div class="config-item-icon" style="background: ${bgColor}">${icon}</div>
-                        <div class="config-item-info">
-                            <div class="config-item-name">
-                                ${cfg.name}
-                                ${isEnabled ? '<span style="margin-left: 8px; padding: 2px 6px; background: #10b981; color: white; border-radius: 4px; font-size: 10px; font-weight: 600;">已启用</span>' : ''}
-                            </div>
-                            <div class="config-item-url">${cfg.baseUrl}</div>
-                        </div>
-                        <div style="display: flex; gap: 4px;">
-                            ${!isEnabled ? `<button class="model-action-btn" onclick="event.stopPropagation(); enableConfig('${cfg.id}')" title="启用配置" style="opacity: 1; background: #10b981; color: white;">✓</button>` : `<button class="model-action-btn" onclick="event.stopPropagation(); disableConfig('${cfg.id}')" title="禁用配置" style="opacity: 1; background: #6b7280; color: white;">✕</button>`}
-                            <button class="config-item-delete" onclick="event.stopPropagation(); deleteConfig('${cfg.id}')" title="删除配置">🗑️</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function getProviderIcon(url) {
-            if (url.includes('dashscope') || url.includes('aliyun')) return '☁️';
-            if (url.includes('deepseek')) return '🧠';
-            if (url.includes('openai')) return '🤖';
-            return '📦';
-        }
-
-        function getProviderColor(url) {
-            if (url.includes('dashscope') || url.includes('aliyun')) return 'rgba(255, 119, 68, 0.2)';
-            if (url.includes('deepseek')) return 'rgba(59, 130, 246, 0.2)';
-            if (url.includes('openai')) return 'rgba(99, 102, 241, 0.2)';
-            return 'rgba(148, 163, 184, 0.2)';
-        }
-
-        // Current selected model ID
-        let selectedModel = null;
-        
-        // All fetched models for selection
-        let allModels = [];
-
-        function addNewConfig() {
-            document.getElementById('configDetailEmpty').style.display = 'none';
-            document.getElementById('configDetailForm').style.display = 'block';
-            
-            document.getElementById('editConfigName').value = '';
-            document.getElementById('editApiKey').value = '';
-            document.getElementById('editApiBaseUrl').value = 'https://api.openai.com/v1';
-            
-            // Reset model selector
-            const modelSelector = document.getElementById('modelSelector');
-            if (modelSelector) {
-                modelSelector.innerHTML = '<option value="">-- 请先获取模型列表 --</option>';
-            }
-            const modelInfo = document.getElementById('selectedModelInfo');
-            if (modelInfo) {
-                modelInfo.style.display = 'none';
-            }
-
-            document.getElementById('testLatencyBtn').style.display = 'none';
-            document.getElementById('latencyResult').style.display = 'none';
-            selectedModel = null;
-            allModels = [];
-
-            selectedConfigId = null;
-        }
-
-        async function selectConfig(id) {
-            try {
-                const response = await fetch(`/api/configs/${id}`);
-                const data = await response.json();
-
-                if (data.code === 1) {
-                    selectedConfigId = id;
-
-                    document.getElementById('configDetailEmpty').style.display = 'none';
-                    document.getElementById('configDetailForm').style.display = 'block';
-
-                    document.getElementById('editConfigName').value = data.config.name;
-                    document.getElementById('editApiKey').value = data.config.apiKey;
-                    document.getElementById('editApiBaseUrl').value = data.config.baseUrl;
-
-                    // Load saved model
-                    selectedModel = data.config.model || null;
-
-                    // Initialize model selector
-                    const modelSelector = document.getElementById('modelSelector');
-                    if (modelSelector) {
-                        modelSelector.innerHTML = '<option value="">-- 请先获取模型列表 --</option>';
-                    }
-                    const modelInfo = document.getElementById('selectedModelInfo');
-                    if (modelInfo) {
-                        modelInfo.style.display = 'none';
-                    }
-
-                    // If there's a saved model, show it
-                    if (selectedModel) {
-                        document.getElementById('selectedModelName').textContent = selectedModel;
-                        document.getElementById('selectedModelInfo').style.display = 'block';
-                    }
-
-                    // Show latency test button
-                    document.getElementById('testLatencyBtn').style.display = 'inline-flex';
-                    document.getElementById('latencyResult').style.display = 'none';
-
-                    document.querySelectorAll('.config-item').forEach(el => el.classList.remove('active'));
-                    document.querySelector(`[onclick="selectConfig('${id}')"]`).classList.add('active');
-                }
-            } catch (error) {
-                console.error('加载配置详情失败:', error);
-            }
-        }
-
-        async function testConfigLatency() {
-            if (!selectedConfigId) {
-                showToast('请先选择一个配置', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('testLatencyBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="loading"></span> 测试中...';
-            btn.disabled = true;
-
-            const latencyResult = document.getElementById('latencyResult');
-            const latencyValue = document.getElementById('latencyValue');
-            latencyResult.style.display = 'block';
-            latencyValue.textContent = '正在测试...';
-            latencyValue.style.color = 'var(--text-muted)';
-
-            try {
-                const response = await fetch(`/api/configs/${selectedConfigId}/test-latency`, {
-                    method: 'POST'
-                });
-
-                const data = await response.json();
-
-                if (data.code === 1) {
-                    if (data.status === 'success') {
-                        latencyValue.textContent = data.message;
-                        latencyValue.style.color = data.latency < 1000 ? 'var(--success)' : 'var(--warning)';
-                        showToast(`延迟测试成功: ${data.latency}ms`, 'success');
-                    } else {
-                        latencyValue.textContent = data.message;
-                        latencyValue.style.color = 'var(--error)';
-                        showToast(data.message, 'error');
-                    }
-                } else {
-                    latencyValue.textContent = data.msg || '测试失败';
-                    latencyValue.style.color = 'var(--error)';
-                    showToast(data.msg || '测试失败', 'error');
-                }
-            } catch (error) {
-                console.error('延迟测试失败:', error);
-                latencyValue.textContent = '网络错误';
-                latencyValue.style.color = 'var(--error)';
-                showToast('延迟测试失败', 'error');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        async function fetchModelsForConfig() {
-            const apiKey = document.getElementById('editApiKey').value.trim();
-            const baseUrl = document.getElementById('editApiBaseUrl').value.trim();
-            
-            if (!apiKey) {
-                showToast('请先输入API Key', 'error');
-                return;
-            }
-            if (!baseUrl) {
-                showToast('请先输入API Base URL', 'error');
-                return;
-            }
-
-            const btn = document.querySelector('[onclick="fetchModelsForConfig()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>⏳</span> 获取中...';
-            btn.disabled = true;
-
-            try {
-                const params = new URLSearchParams({ apiKey, baseUrl });
-                const response = await fetch(`/api/models?${params}`, {
-                    method: 'GET'
-                });
-                const data = await response.json();
-                
-                if (data.code === 1 && data.models && data.models.length > 0) {
-                    // Store all models
-                    allModels = data.models;
-                    
-                    // Populate selector
-                    const modelSelector = document.getElementById('modelSelector');
-                    modelSelector.innerHTML = '<option value="">-- 请选择模型 --</option>';
-                    
-                    data.models.forEach(model => {
-                        const option = document.createElement('option');
-                        option.value = model.id;
-                        option.textContent = model.description || model.name || model.id;
-                        modelSelector.appendChild(option);
-                    });
-                    
-                    // If model was previously selected, restore it
-                    if (selectedModel) {
-                        modelSelector.value = selectedModel;
-                        onModelSelected();
-                    }
-                    
-                    showToast(`成功获取 ${data.models.length} 个模型，请选择要使用的模型`, 'success');
-                } else {
-                    showToast(data.msg || '未获取到模型列表', 'error');
-                }
-            } catch (error) {
-                console.error('获取模型列表失败:', error);
-                showToast('获取模型列表失败: ' + error.message, 'error');
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        }
-
-        function onModelSelected() {
-            const modelSelector = document.getElementById('modelSelector');
-            selectedModel = modelSelector.value;
-            
-            if (selectedModel) {
-                const modelName = modelSelector.options[modelSelector.selectedIndex].text;
-                document.getElementById('selectedModelName').textContent = modelName;
-                document.getElementById('selectedModelInfo').style.display = 'block';
-            } else {
-                document.getElementById('selectedModelInfo').style.display = 'none';
-            }
-        }
-
-        async function saveEditedConfig() {
-            const name = document.getElementById('editConfigName').value.trim();
-            const apiKey = document.getElementById('editApiKey').value.trim();
-            const baseUrl = document.getElementById('editApiBaseUrl').value.trim();
-            const model = selectedModel;
-            
-            if (!name) {
-                showToast('请输入配置名称', 'error');
-                return;
-            }
-            if (!apiKey) {
-                showToast('请输入API Key', 'error');
-                return;
-            }
-            if (!baseUrl) {
-                showToast('请输入API Base URL', 'error');
-                return;
-            }
-
-            try {
-                let response;
-                if (selectedConfigId) {
-                    response = await fetch(`/api/configs/${selectedConfigId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, apiKey, baseUrl, model })
-                    });
-                } else {
-                    response = await fetch('/api/configs', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, apiKey, baseUrl, model })
-                    });
-                }
-                
-                const data = await response.json();
-                
-                if (data.code === 1) {
-                    showToast(selectedConfigId ? '配置更新成功' : '配置保存成功', 'success');
-                    await loadConfigs();
-                    cancelEdit();
-                } else {
-                    showToast(data.msg || '保存失败', 'error');
-                }
-            } catch (error) {
-                console.error('保存配置失败:', error);
-                showToast('保存失败', 'error');
-            }
-        }
-
-        function cancelEdit() {
-            document.getElementById('configDetailForm').style.display = 'none';
-            document.getElementById('configDetailEmpty').style.display = 'block';
-            selectedConfigId = null;
-            
-            document.querySelectorAll('.config-item').forEach(el => el.classList.remove('active'));
-        }
-
-        async function deleteConfig(id) {
-            if (!confirm('确定要删除这个配置吗？')) return;
-            
-            try {
-                const response = await fetch(`/api/configs/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                const data = await response.json();
-                
-                if (data.code === 1) {
-                    showToast('配置已删除', 'success');
-                    await loadConfigs();
-                    cancelEdit();
-                } else {
-                    showToast(data.msg || '删除失败', 'error');
-                }
-            } catch (error) {
-                console.error('删除配置失败:', error);
-                showToast('删除失败', 'error');
-            }
-        }
-
-        // === End Config Management ===
-
-        // Load config from localStorage
-        function loadConfig() {
-            const saved = localStorage.getItem('ocsAiConfig');
-            if (saved) {
-                config = JSON.parse(saved);
-            }
-        }
-
-        // Save config
-        function saveConfig() {
-            localStorage.setItem('ocsAiConfig', JSON.stringify(config));
-            showToast('配置已保存到浏览器', 'success');
-        }
-
-        // Reset config
-        function resetConfig() {
-            localStorage.removeItem('ocsAiConfig');
-            showToast('配置已重置', 'info');
-        }
-
-        // Toggle password visibility
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(inputId + 'Icon');
-            
-            if (input && icon) {
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.textContent = '🔒';
-                } else {
-                    input.type = 'password';
-                    icon.textContent = '👁️';
-                }
-            }
-        }
-        
-        // Fetch models from API
-        async function fetchModels() {
-            // This function is now unused - models are fetched through config management
-            showToast('请在配置管理中添加配置并获取模型列表', 'info');
-        }
-
-        // Check health
         async function checkHealth() {
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
-
             try {
                 const response = await fetch('/api/health');
-                const data = await response.json();
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
                 
-                if (data.code === 1) {
+                if (response.ok) {
                     statusDot.classList.remove('offline');
-                    statusText.textContent = data.ai_enabled ? '服务正常' : 'AI 未配置';
+                    statusText.textContent = '服务运行正常';
                 } else {
                     statusDot.classList.add('offline');
                     statusText.textContent = '服务异常';
                 }
-            } catch (error) {
-                statusDot.classList.add('offline');
-                statusText.textContent = '服务离线';
+            } catch {
+                document.getElementById('statusDot').classList.add('offline');
+                document.getElementById('statusText').textContent = '连接失败';
             }
         }
 
-        // Send test request
-        async function sendTest() {
-            console.log('🚀 sendTest 被触发');
-
-            const testTitle = document.getElementById('testTitle');
-            const title = testTitle ? testTitle.value : '';
-
-            if (!title || title.trim() === '') {
-                console.log('⚠️ 题目为空，跳过请求');
-                return;
-            }
-
-            const testBtn = document.getElementById('testBtn');
-            if (!testBtn || testBtn.disabled) {
-                console.log('⚠️ 按钮不可用或已被禁用，跳过');
-                return;
-            }
-
-            const testResult = document.getElementById('testResult');
-            const testStatus = document.getElementById('testStatus');
-            const testResponse = document.getElementById('testResponse');
-            const answerHighlight = document.getElementById('answerHighlight');
-            const answerText = document.getElementById('answerText');
-
-            const options = document.getElementById('testOptions')?.value || '';
-            const type = document.getElementById('testType')?.value || 'single';
-            const method = document.getElementById('requestMethod')?.value || 'post';
-            const configSelect = document.getElementById('testConfigSelect');
-            const apiKey = document.getElementById('testApiKey')?.value?.trim() || '';
-
-            if (!apiKey) {
-                console.log('⚠️ API Key 为空，跳过请求');
-                showToast('请先填写 API Key', 'error');
-                testBtn.disabled = false;
-                testBtn.innerHTML = '<span>🚀</span> 发送测试请求';
-                return;
-            }
-
-            // Get selected config if any
-            let config = null;
-            if (configSelect && configSelect.value) {
-                try {
-                    config = JSON.parse(configSelect.value);
-                } catch (e) {
-                    console.error('解析配置失败:', e);
-                }
-            }
-
-            testBtn.disabled = true;
-            testBtn.innerHTML = '<span class="loading"></span> 发送中...';
-            testResult.style.display = 'block';
-            answerHighlight.style.display = 'none';
-
-            try {
-                let url, body, headers = {};
-
-                if (method === 'get') {
-                    // GET请求 - 如果有配置，使用配置的参数
-                    if (config) {
-                        url = `/api/answer?apiKey=${encodeURIComponent(apiKey)}&title=${encodeURIComponent(title)}&options=${encodeURIComponent(options)}&type=${encodeURIComponent(type)}&baseUrl=${encodeURIComponent(config.baseUrl)}&apiKey=${encodeURIComponent(config.apiKey)}&model=${encodeURIComponent(config.model)}`;
-                    } else {
-                        url = `/api/answer?apiKey=${encodeURIComponent(apiKey)}&title=${encodeURIComponent(title)}&options=${encodeURIComponent(options)}&type=${encodeURIComponent(type)}`;
-                    }
-                    body = null;
-                } else {
-                    // POST请求
-                    url = '/api/answer';
-                    const requestData = { 
-                        apiKey,
-                        title, 
-                        options, 
-                        type 
-                    };
-                    // 如果有配置，添加到请求体
-                    if (config) {
-                        requestData.baseUrl = config.baseUrl;
-                        requestData.apiKey = config.apiKey;
-                        requestData.model = config.model;
-                    }
-                    body = JSON.stringify(requestData);
-                    headers = { 'Content-Type': 'application/json' };
-                }
-
-                const response = await fetch(url, {
-                    method: method.toUpperCase(),
-                    headers,
-                    body
-                });
-
-                const contentType = response.headers.get('content-type');
-                let data;
-
-                if (contentType && contentType.includes('application/json')) {
-                    data = await response.json();
-                } else {
-                    const text = await response.text();
-                    testResponse.textContent = `❌ 服务器返回了非JSON格式的响应:\n${text.substring(0, 1000)}`;
-                    testStatus.className = 'test-status error';
-                    testStatus.textContent = '服务器错误';
-                    return;
-                }
-
-                testResponse.textContent = JSON.stringify(data, null, 2);
-                
-                if (data.code === 1) {
-                    testStatus.className = 'test-status success';
-                    testStatus.textContent = '成功';
-                    
-                    const answer = data.answer || (data.results && data.results[0]?.answer);
-                    if (answer) {
-                        answerHighlight.style.display = 'block';
-                        answerText.textContent = answer;
-                    }
-                } else {
-                    testStatus.className = 'test-status error';
-                    testStatus.textContent = '失败';
-                }
-            } catch (error) {
-                testStatus.className = 'test-status error';
-                testStatus.textContent = '错误';
-                testResponse.textContent = `请求失败: ${error.message}`;
-            } finally {
-                testBtn.disabled = false;
-                testBtn.innerHTML = '<span>🚀</span> 发送测试请求';
-            }
-        }
-
-        // Copy code
-        function copyCode() {
-            const code = document.getElementById('ocsConfig').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                showToast('配置代码已复制到剪贴板', 'success');
-            }).catch(() => {
-                showToast('复制失败，请手动复制', 'error');
-            });
-        }
-
-        // Update OCS config with current server address
-        function updateOCSConfig() {
-            const serverHost = document.getElementById('serverHost').value.trim() || 'http://localhost:3000';
-            const apiKey = document.getElementById('ocsApiKey')?.value.trim() || '你的APIKey';
-            let finalHost = serverHost;
-
-            if (!serverHost.startsWith('http://') && !serverHost.startsWith('https://')) {
-                finalHost = 'http://' + serverHost;
-                document.getElementById('serverHost').value = finalHost;
-            }
-
-            const configCode = JSON.stringify([{
-                name: "AI智能搜题",
-                homepage: finalHost,
-                url: `${finalHost}/api/answer`,
-                method: "post",
-                type: "GM_xmlhttpRequest",
-                contentType: "json",
-                data: {
-                    apiKey: apiKey,
-                    title: "${title}",
-                    options: "${options}",
-                    type: "${type}"
-                },
-                handler: "return (res)=> res.code === 1 ? [res.question, res.answer] : undefined"
-            }], null, 4);
-
-            document.getElementById('ocsConfig').textContent = configCode;
-            localStorage.setItem('ocsServerHost', finalHost);
-            localStorage.setItem('ocsApiKey', apiKey);
-        }
-
-        // Load saved server address and API Key
-        function loadServerHost() {
-            const saved = localStorage.getItem('ocsServerHost');
-            if (saved) {
-                document.getElementById('serverHost').value = saved;
-            }
-            const savedApiKey = localStorage.getItem('ocsApiKey');
-            if (savedApiKey) {
-                document.getElementById('ocsApiKey').value = savedApiKey;
-            }
-            updateOCSConfig();
-        }
-
-        // Save server address
-        function saveServerHost() {
-            const host = document.getElementById('serverHost').value;
-            localStorage.setItem('ocsServerHost', host);
-        }
-
-        // Toggle accordion
-        function toggleAccordion(header) {
-            const item = header.parentElement;
-            item.classList.toggle('active');
-        }
-
-        // Toggle theme
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            
-            if (body.classList.contains('light-theme')) {
-                body.classList.remove('light-theme');
-                themeIcon.textContent = '🌙';
-                localStorage.setItem('theme', 'dark');
-                showToast('已切换到深色主题', 'info');
-            } else {
-                body.classList.add('light-theme');
-                themeIcon.textContent = '☀️';
-                localStorage.setItem('theme', 'light');
-                showToast('已切换到浅色主题', 'success');
-            }
-        }
-
-        // Load saved theme
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const themeIcon = document.getElementById('themeIcon');
-
-            if (savedTheme === 'dark') {
-                document.body.classList.remove('light-theme');
-                themeIcon.textContent = '🌙';
-            } else {
-                document.body.classList.add('light-theme');
-                themeIcon.textContent = '☀️';
-            }
-        }
-
-        // Show toast
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span> ${message}`;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Auto-refresh health status
+        checkHealth();
         setInterval(checkHealth, 30000);
     </script>
 </body>
