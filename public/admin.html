@@ -1289,7 +1289,7 @@
                                         ${configList.map(c => `
                                             <tr>
                                                 <td><strong>${c.name}</strong></td>
-                                                <td>${c.provider}</td>
+                                                <td>${getProviderDisplayName(c.provider)}</td>
                                                 <td>${c.model}</td>
                                                 <td>
                                                     <span class="status-badge ${c.enabled ? 'enabled' : 'disabled'}">
@@ -1317,6 +1317,15 @@
             }
         }
 
+        function getProviderDisplayName(provider) {
+            const names = {
+                deepseek: 'DeepSeek',
+                aliyun: '阿里云百炼',
+                openai: 'OpenAI'
+            };
+            return names[provider] || provider || '未知';
+        }
+        
         function showCreateConfigModal() {
             document.getElementById('modalTitle').textContent = '添加 AI 配置';
             document.getElementById('modalContent').innerHTML = `
@@ -1330,6 +1339,7 @@
                         <option value="deepseek">DeepSeek</option>
                         <option value="aliyun">阿里云百炼</option>
                         <option value="openai">OpenAI</option>
+                        <option value="custom">自定义</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1361,12 +1371,21 @@
 
         function updateCreateConfigBaseUrl() {
             const provider = document.getElementById('newConfigProvider').value;
+            const baseUrlInput = document.getElementById('newConfigBaseUrl');
             const baseUrls = {
                 deepseek: 'https://api.deepseek.com',
                 aliyun: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
                 openai: 'https://api.openai.com/v1'
             };
-            document.getElementById('newConfigBaseUrl').value = baseUrls[provider] || '';
+            
+            if (provider === 'custom') {
+                baseUrlInput.value = '';
+                baseUrlInput.placeholder = '输入自定义 API 地址';
+                baseUrlInput.removeAttribute('readonly');
+            } else {
+                baseUrlInput.value = baseUrls[provider] || '';
+                baseUrlInput.placeholder = baseUrls[provider] || '';
+            }
         }
 
         async function fetchCreateConfigModels() {
@@ -1448,40 +1467,41 @@
         async function showEditConfigModal(id) {
             try {
                 const response = await fetch(`/api/configs/${id}`, { headers: getHeaders() });
-                const config = await response.json();
+                const configData = await response.json();
                 
                 document.getElementById('modalTitle').textContent = '编辑配置';
                 document.getElementById('modalContent').innerHTML = `
-                    <input type="hidden" id="editConfigId" value="${config.id}">
+                    <input type="hidden" id="editConfigId" value="${configData.id}">
                     <div class="form-group">
                         <label class="form-label">配置名称</label>
-                        <input type="text" class="form-input" id="editConfigName" value="${config.name}">
+                        <input type="text" class="form-input" id="editConfigName" value="${configData.name}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">提供商</label>
-                        <select class="form-select" id="editConfigProvider" disabled>
-                            <option value="deepseek" ${config.provider === 'deepseek' ? 'selected' : ''}>DeepSeek</option>
-                            <option value="aliyun" ${config.provider === 'aliyun' ? 'selected' : ''}>阿里云百炼</option>
-                            <option value="openai" ${config.provider === 'openai' ? 'selected' : ''}>OpenAI</option>
+                        <select class="form-select" id="editConfigProvider" onchange="updateEditConfigBaseUrl()">
+                            <option value="deepseek" ${configData.provider === 'deepseek' ? 'selected' : ''}>DeepSeek</option>
+                            <option value="aliyun" ${configData.provider === 'aliyun' ? 'selected' : ''}>阿里云百炼</option>
+                            <option value="openai" ${configData.provider === 'openai' ? 'selected' : ''}>OpenAI</option>
+                            <option value="custom" ${!['deepseek', 'aliyun', 'openai'].includes(configData.provider) ? 'selected' : ''}>自定义</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">API Key</label>
                         <div style="display: flex; gap: 8px;">
-                            <input type="text" class="form-input" id="editConfigApiKey" value="${config.apiKey}" style="flex: 1;">
+                            <input type="text" class="form-input" id="editConfigApiKey" value="${configData.apiKey}" style="flex: 1;">
                             <button class="btn btn-secondary" onclick="fetchEditConfigModels()" id="fetchEditModelsBtn" style="padding: 10px 16px; white-space: nowrap;">获取模型</button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">API Base URL</label>
-                        <input type="text" class="form-input" id="editConfigBaseUrl" value="${config.baseUrl}">
+                        <input type="text" class="form-input" id="editConfigBaseUrl" value="${configData.baseUrl}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">模型名称</label>
                         <select class="form-select" id="editConfigModelSelect" style="margin-bottom: 8px;">
                             <option value="">选择模型</option>
                         </select>
-                        <input type="text" class="form-input" id="editConfigModelInput" value="${config.model}" placeholder="或手动输入模型">
+                        <input type="text" class="form-input" id="editConfigModelInput" value="${configData.model}" placeholder="或手动输入模型">
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" onclick="closeModal()">取消</button>
@@ -1491,6 +1511,24 @@
                 document.getElementById('modalOverlay').classList.add('show');
             } catch (error) {
                 showToast('加载失败', 'error');
+            }
+        }
+
+        function updateEditConfigBaseUrl() {
+            const provider = document.getElementById('editConfigProvider').value;
+            const baseUrlInput = document.getElementById('editConfigBaseUrl');
+            const baseUrls = {
+                deepseek: 'https://api.deepseek.com',
+                aliyun: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+                openai: 'https://api.openai.com/v1'
+            };
+            
+            if (provider === 'custom') {
+                baseUrlInput.value = '';
+                baseUrlInput.placeholder = '输入自定义 API 地址';
+            } else {
+                baseUrlInput.value = baseUrls[provider] || '';
+                baseUrlInput.placeholder = baseUrls[provider] || '';
             }
         }
 
@@ -1531,6 +1569,7 @@
         async function saveConfig() {
             const id = document.getElementById('editConfigId').value;
             const name = document.getElementById('editConfigName').value;
+            const provider = document.getElementById('editConfigProvider').value;
             const apiKey = document.getElementById('editConfigApiKey').value;
             const baseUrl = document.getElementById('editConfigBaseUrl').value;
             const modelSelect = document.getElementById('editConfigModelSelect').value;
@@ -1541,7 +1580,7 @@
                 const response = await fetch(`/api/configs/${id}`, {
                     method: 'PUT',
                     headers: getHeaders(),
-                    body: JSON.stringify({ name, apiKey, model, baseUrl })
+                    body: JSON.stringify({ name, provider, apiKey, model, baseUrl })
                 });
                 
                 const data = await response.json();

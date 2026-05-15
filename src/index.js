@@ -736,6 +736,7 @@ app.post('/api/configs', requireAuth, (req, res) => {
   const config = {
     id: Date.now().toString(),
     name: req.body.name || '未命名配置',
+    provider: req.body.provider,
     apiKey: req.body.apiKey,
     baseUrl: req.body.baseUrl,
     model: req.body.model,
@@ -906,6 +907,7 @@ app.put('/api/configs/:id', requireAuth, (req, res) => {
     configStorage[index] = {
       ...configStorage[index],
       name: req.body.name || configStorage[index].name,
+      provider: req.body.provider || configStorage[index].provider,
       apiKey: req.body.apiKey || configStorage[index].apiKey,
       baseUrl: req.body.baseUrl || configStorage[index].baseUrl,
       model: req.body.model || configStorage[index].model,
