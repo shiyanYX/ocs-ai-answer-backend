@@ -1,13 +1,13 @@
 import crypto from 'crypto';
 import fs from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = join(fileURLToPath(new URL('.', import.meta.url)), '../');
+const __dirname = dirname(__filename);
 
-const ADMIN_FILE = join(__dirname, '../../data/admin.json');
-const API_KEY_FILE = join(__dirname, '../../data/api-keys.json');
+const ADMIN_FILE = join(__dirname, '../data/admin.json');
+const API_KEY_FILE = join(__dirname, '../data/api-keys.json');
 
 const INITIAL_ADMIN_USERNAME = 'admin';
 const INITIAL_ADMIN_PASSWORD = 'admin123';
@@ -145,18 +145,7 @@ export function getAdminStatus() {
   };
 }
 
-export function initApiKeys() {
-  ensureDataDir();
-  try {
-    if (fs.existsSync(API_KEY_FILE)) {
-      const data = JSON.parse(fs.readFileSync(API_KEY_FILE, 'utf-8'));
-      return data.keys || [];
-    }
-  } catch (error) {
-    console.error('❌ 加载API Key数据失败:', error.message);
-  }
-  return [];
-}
+let apiKeys = [];
 
 function saveApiKeys(keys) {
   ensureDataDir();
@@ -169,7 +158,41 @@ function saveApiKeys(keys) {
   }
 }
 
-let apiKeys = initApiKeys();
+function createAndSaveDefaultKey() {
+  const key = `ocs_${crypto.randomBytes(24).toString('hex')}`;
+  const apiKeyData = {
+    id: Date.now().toString(),
+    alias: '默认密钥',
+    key,
+    createdAt: new Date().toISOString(),
+    callCount: 0,
+    lastCallAt: null,
+    enabled: true,
+    expiresAt: null,
+    maxCalls: null
+  };
+  apiKeys.push(apiKeyData);
+  saveApiKeys(apiKeys);
+  console.log(`✅ 默认 API Key: ${key.substring(0, 20)}...`);
+  return apiKeyData;
+}
+
+export function initApiKeys() {
+  ensureDataDir();
+  try {
+    if (fs.existsSync(API_KEY_FILE)) {
+      const data = JSON.parse(fs.readFileSync(API_KEY_FILE, 'utf-8'));
+      apiKeys = data.keys || [];
+      return apiKeys;
+    }
+  } catch (error) {
+    console.error('❌ 加载API Key数据失败:', error.message);
+  }
+  
+  const defaultKey = createAndSaveDefaultKey();
+  console.log('📦 首次启动，已自动创建默认 API Key');
+  return [defaultKey];
+}
 
 export function generateApiKey(alias = '未命名', options = {}) {
   const key = `ocs_${crypto.randomBytes(24).toString('hex')}`;

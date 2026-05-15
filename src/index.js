@@ -661,7 +661,25 @@ function loadConfigs() {
   } catch (error) {
     console.error('❌ 加载配置失败:', error.message);
   }
-  return [];
+  
+  const sampleConfig = {
+    id: Date.now().toString(),
+    name: '示例配置',
+    provider: 'deepseek',
+    apiKey: 'your-api-key-here',
+    baseUrl: 'https://api.deepseek.com/v1',
+    model: 'deepseek-chat',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  saveConfigs([sampleConfig]);
+  enabledConfigId = sampleConfig.id;
+  saveEnabledConfigId(sampleConfig.id);
+  console.log('📦 首次启动，已自动创建示例 AI 配置');
+  console.log('⚠️  请在管理后台修改配置，填入您的 API Key');
+  
+  return [sampleConfig];
 }
 
 function saveConfigs(configs) {
@@ -697,8 +715,11 @@ function saveEnabledConfigId(id) {
   }
 }
 
+let enabledConfigId = null;
 let configStorage = loadConfigs();
-let enabledConfigId = loadEnabledConfigId();
+enabledConfigId = loadEnabledConfigId();
+initAdmin();
+initApiKeys();
 console.log(`📦 已加载 ${configStorage.length} 个配置`);
 console.log(`📦 启用的配置: ${enabledConfigId || '无'}`);
 
@@ -1056,9 +1077,6 @@ app.delete('/api/admin/apikeys/:key', requireAuth, (req, res) => {
 });
 
 function startServer() {
-  initAdmin();
-  initApiKeys();
-  
   if (configStorage.length > 0) {
     const primaryConfig = configStorage[0];
     console.log(`📦 找到 ${configStorage.length} 个配置，使用 "${primaryConfig.name}" 初始化AI`);
