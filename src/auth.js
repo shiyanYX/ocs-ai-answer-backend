@@ -158,25 +158,6 @@ function saveApiKeys(keys) {
   }
 }
 
-function createAndSaveDefaultKey() {
-  const key = `ocs_${crypto.randomBytes(24).toString('hex')}`;
-  const apiKeyData = {
-    id: Date.now().toString(),
-    alias: '默认密钥',
-    key,
-    createdAt: new Date().toISOString(),
-    callCount: 0,
-    lastCallAt: null,
-    enabled: true,
-    expiresAt: null,
-    maxCalls: null
-  };
-  apiKeys.push(apiKeyData);
-  saveApiKeys(apiKeys);
-  console.log(`✅ 默认 API Key: ${key.substring(0, 20)}...`);
-  return apiKeyData;
-}
-
 export function initApiKeys() {
   ensureDataDir();
   try {
@@ -189,9 +170,10 @@ export function initApiKeys() {
     console.error('❌ 加载API Key数据失败:', error.message);
   }
   
-  const defaultKey = createAndSaveDefaultKey();
-  console.log('📦 首次启动，已自动创建默认 API Key');
-  return [defaultKey];
+  apiKeys = [];
+  saveApiKeys(apiKeys);
+  console.log('📦 首次启动，已创建空的 API Key 列表，请在管理后台创建');
+  return [];
 }
 
 export function generateApiKey(alias = '未命名', options = {}) {
