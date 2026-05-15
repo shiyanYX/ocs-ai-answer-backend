@@ -1433,7 +1433,7 @@
                 
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.code === 1) {
                     showToast('配置添加成功', 'success');
                     loadPage('configs');
                     closeModal();
@@ -1546,7 +1546,7 @@
                 
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.code === 1) {
                     showToast('保存成功', 'success');
                     loadPage('configs');
                     closeModal();
@@ -1566,7 +1566,7 @@
                 });
                 
                 const data = await response.json();
-                showToast(data.msg, data.success ? 'success' : 'error');
+                showToast(data.msg, data.code === 1 ? 'success' : 'error');
                 loadPage('configs');
             } catch (error) {
                 showToast('操作失败', 'error');
@@ -1583,7 +1583,7 @@
                 });
                 
                 const data = await response.json();
-                showToast(data.msg, data.success ? 'success' : 'error');
+                showToast(data.msg, data.code === 1 ? 'success' : 'error');
                 loadPage('configs');
             } catch (error) {
                 showToast('删除失败', 'error');
