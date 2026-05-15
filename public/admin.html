@@ -1467,7 +1467,8 @@
         async function showEditConfigModal(id) {
             try {
                 const response = await fetch(`/api/configs/${id}`, { headers: getHeaders() });
-                const configData = await response.json();
+                const result = await response.json();
+                const configData = result.config || result;
                 
                 document.getElementById('modalTitle').textContent = '编辑配置';
                 document.getElementById('modalContent').innerHTML = `

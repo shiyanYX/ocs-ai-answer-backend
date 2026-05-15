@@ -703,9 +703,13 @@ console.log(`📦 已加载 ${configStorage.length} 个配置`);
 console.log(`📦 启用的配置: ${enabledConfigId || '无'}`);
 
 app.get('/api/configs', requireAuth, (req, res) => {
+  const configsWithStatus = configStorage.map(c => ({
+    ...c,
+    enabled: c.id === enabledConfigId
+  }));
   res.json({
     code: 1,
-    configs: configStorage
+    configs: configsWithStatus
   });
 });
 
