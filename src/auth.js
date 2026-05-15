@@ -1,20 +1,16 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import fs from 'fs';
-import { join, dirname } from 'path';
+import { join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const JWT_SECRET = process.env.JWT_SECRET || 'ocs-ai-secret-key-change-in-production';
-const SALT_ROUNDS = 10;
-const INITIAL_ADMIN_USERNAME = 'admin';
-const INITIAL_ADMIN_PASSWORD = 'admin123';
+const __dirname = join(__dirname, '../');
 
 const ADMIN_FILE = join(__dirname, '../../data/admin.json');
 const API_KEY_FILE = join(__dirname, '../../data/api-keys.json');
+
+const INITIAL_ADMIN_USERNAME = 'admin';
+const INITIAL_ADMIN_PASSWORD = 'admin123';
 
 function ensureDataDir() {
   const dataDir = join(__dirname, '../../data');
@@ -33,22 +29,21 @@ export function initAdmin() {
   } catch (error) {
     console.error('❌ 加载管理员数据失败:', error.message);
   }
-  
-  const hashedPassword = bcrypt.hashSync(INITIAL_ADMIN_PASSWORD, SALT_ROUNDS);
+
   const adminData = {
     username: INITIAL_ADMIN_USERNAME,
-    password: hashedPassword,
+    password: INITIAL_ADMIN_PASSWORD,
     mustChangePassword: true,
     createdAt: new Date().toISOString(),
     lastLogin: null
   };
-  
+
   fs.writeFileSync(ADMIN_FILE, JSON.stringify(adminData, null, 2), 'utf-8');
   console.log('✅ 已创建初始管理员账户');
   console.log(`   用户名: ${INITIAL_ADMIN_USERNAME}`);
   console.log(`   密码: ${INITIAL_ADMIN_PASSWORD}`);
   console.log('   ⚠️  首次登录后必须修改密码！');
-  
+
   return adminData;
 }
 
@@ -63,31 +58,23 @@ function saveAdmin(adminData) {
   }
 }
 
-export async function login(username, password) {
+export function login(username, password) {
   const adminData = initAdmin();
-  
+
   if (adminData.username !== username) {
     return { success: false, msg: '用户名或密码错误' };
   }
-  
-  const passwordMatch = await bcrypt.compare(password, adminData.password);
-  if (!passwordMatch) {
+
+  if (adminData.password !== password) {
     return { success: false, msg: '用户名或密码错误' };
   }
-  
+
+  const token = crypto.randomBytes(32).toString('hex');
+
   adminData.lastLogin = new Date().toISOString();
+  adminData.token = token;
   saveAdmin(adminData);
-  
-  const token = jwt.sign(
-    { 
-      username: adminData.username,
-      type: 'admin',
-      iat: Math.floor(Date.now() / 1000)
-    },
-    JWT_SECRET,
-    { expiresIn: '24h' }
-  );
-  
+
   return {
     success: true,
     token,
@@ -97,18 +84,18 @@ export async function login(username, password) {
 }
 
 export function verifyToken(req) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const token = req.headers['x-admin-token'] || req.query.adminToken;
+
+  if (!token) {
     return null;
   }
-  
-  const token = authHeader.substring(7);
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    return decoded;
-  } catch (error) {
+
+  const adminData = initAdmin();
+  if (adminData.token !== token) {
     return null;
   }
+
+  return { username: adminData.username };
 }
 
 export function requireAuth(req, res, next) {
@@ -121,31 +108,30 @@ export function requireAuth(req, res, next) {
   next();
 }
 
-export async function changePassword(username, oldPassword, newPassword) {
+export function changePassword(username, oldPassword, newPassword) {
   const adminData = initAdmin();
-  
+
   if (adminData.username !== username) {
     return { success: false, msg: '用户不存在' };
   }
-  
-  if (adminData.mustChangePassword && oldPassword === INITIAL_ADMIN_PASSWORD) {
-    const hashedPassword = bcrypt.hashSync(newPassword, SALT_ROUNDS);
-    adminData.password = hashedPassword;
+
+  if (adminData.mustChangePassword) {
+    if (oldPassword !== INITIAL_ADMIN_PASSWORD && oldPassword !== adminData.password) {
+      return { success: false, msg: '原密码错误' };
+    }
+    adminData.password = newPassword;
     adminData.mustChangePassword = false;
     saveAdmin(adminData);
     return { success: true, msg: '密码修改成功' };
   }
-  
-  const passwordMatch = await bcrypt.compare(oldPassword, adminData.password);
-  if (!passwordMatch) {
+
+  if (adminData.password !== oldPassword) {
     return { success: false, msg: '原密码错误' };
   }
-  
-  const hashedPassword = bcrypt.hashSync(newPassword, SALT_ROUNDS);
-  adminData.password = hashedPassword;
-  adminData.mustChangePassword = false;
+
+  adminData.password = newPassword;
   saveAdmin(adminData);
-  
+
   return { success: true, msg: '密码修改成功' };
 }
 
@@ -185,66 +171,89 @@ function saveApiKeys(keys) {
 
 let apiKeys = initApiKeys();
 
-export function generateApiKey(name = '未命名') {
+export function generateApiKey(alias = '未命名', options = {}) {
   const key = `ocs_${crypto.randomBytes(24).toString('hex')}`;
   const apiKeyData = {
+    id: Date.now().toString(),
+    alias,
     key,
-    name,
     createdAt: new Date().toISOString(),
     callCount: 0,
     lastCallAt: null,
-    enabled: true
+    enabled: true,
+    expiresAt: options.expiresAt || null,
+    maxCalls: options.maxCalls || null
   };
-  
+
   apiKeys.push(apiKeyData);
   saveApiKeys(apiKeys);
-  
-  console.log(`✅ 已生成API Key: ${key.substring(0, 20)}... (${name})`);
-  
+
+  console.log(`✅ 已生成API Key: ${key.substring(0, 20)}... (${alias})`);
+
   return apiKeyData;
 }
 
 export function verifyApiKey(key) {
   if (!key) return null;
-  
+
   const apiKeyData = apiKeys.find(k => k.key === key);
-  if (!apiKeyData || !apiKeyData.enabled) {
+  if (!apiKeyData) {
     return null;
   }
-  
+
+  if (!apiKeyData.enabled) {
+    return null;
+  }
+
+  if (apiKeyData.expiresAt) {
+    const expiresAt = new Date(apiKeyData.expiresAt);
+    if (expiresAt < new Date()) {
+      return null;
+    }
+  }
+
+  if (apiKeyData.maxCalls !== null && apiKeyData.callCount >= apiKeyData.maxCalls) {
+    return null;
+  }
+
   apiKeyData.callCount++;
   apiKeyData.lastCallAt = new Date().toISOString();
   saveApiKeys(apiKeys);
-  
+
   return apiKeyData;
 }
 
 export function requireApiKey(req, res, next) {
-  const key = req.body?.apiKey || req.query?.apiKey || req.headers['x-api-key'];
-  
+  const key = req.body?.apiKey || req.query?.apiKey;
+
   if (!key) {
-    res.json({ code: 0, msg: '缺少API Key' });
+    res.json({ code: 401, msg: 'API Key 无效或已过期' });
     return;
   }
-  
+
   const apiKeyData = verifyApiKey(key);
   if (!apiKeyData) {
-    res.json({ code: 0, msg: '无效的API Key' });
+    res.json({ code: 401, msg: 'API Key 无效或已过期' });
     return;
   }
-  
+
   req.apiKey = apiKeyData;
   next();
 }
 
 export function getApiKeys() {
   return apiKeys.map(k => ({
+    id: k.id,
+    alias: k.alias,
     key: k.key,
-    name: k.name,
     createdAt: k.createdAt,
     callCount: k.callCount,
     lastCallAt: k.lastCallAt,
-    enabled: k.enabled
+    enabled: k.enabled,
+    expiresAt: k.expiresAt,
+    maxCalls: k.maxCalls,
+    remainingCalls: k.maxCalls ? k.maxCalls - k.callCount : null,
+    isExpired: k.expiresAt ? new Date(k.expiresAt) < new Date() : false
   }));
 }
 
@@ -253,10 +262,10 @@ export function deleteApiKey(key) {
   if (index === -1) {
     return { success: false, msg: 'API Key不存在' };
   }
-  
+
   apiKeys.splice(index, 1);
   saveApiKeys(apiKeys);
-  
+
   return { success: true, msg: 'API Key已删除' };
 }
 
@@ -265,23 +274,44 @@ export function toggleApiKey(key) {
   if (!apiKeyData) {
     return { success: false, msg: 'API Key不存在' };
   }
-  
+
   apiKeyData.enabled = !apiKeyData.enabled;
   saveApiKeys(apiKeys);
-  
+
   return { success: true, msg: apiKeyData.enabled ? 'API Key已启用' : 'API Key已禁用' };
 }
 
-export function resetApiKeyCount(key) {
+export function updateApiKey(key, updates) {
   const apiKeyData = apiKeys.find(k => k.key === key);
   if (!apiKeyData) {
     return { success: false, msg: 'API Key不存在' };
   }
-  
-  apiKeyData.callCount = 0;
+
+  if (updates.alias !== undefined) {
+    apiKeyData.alias = updates.alias;
+  }
+  if (updates.expiresAt !== undefined) {
+    apiKeyData.expiresAt = updates.expiresAt;
+  }
+  if (updates.maxCalls !== undefined) {
+    apiKeyData.maxCalls = updates.maxCalls;
+  }
+
   saveApiKeys(apiKeys);
-  
-  return { success: true, msg: '调用次数已重置' };
+  return { success: true, msg: 'API Key已更新' };
+}
+
+export function regenerateApiKey(key) {
+  const apiKeyData = apiKeys.find(k => k.key === key);
+  if (!apiKeyData) {
+    return { success: false, msg: 'API Key不存在' };
+  }
+
+  const newKey = `ocs_${crypto.randomBytes(24).toString('hex')}`;
+  apiKeyData.key = newKey;
+  saveApiKeys(apiKeys);
+
+  return { success: true, msg: 'API Key已重新生成', key: newKey };
 }
 
 export function getStats() {
@@ -291,10 +321,12 @@ export function getStats() {
     totalCalls,
     activeKeys: apiKeys.filter(k => k.enabled).length,
     keys: apiKeys.map(k => ({
-      name: k.name,
+      alias: k.alias,
       callCount: k.callCount,
       lastCallAt: k.lastCallAt,
       enabled: k.enabled
     }))
   };
 }
+
+export { apiKeys };

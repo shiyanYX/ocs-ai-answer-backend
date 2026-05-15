@@ -17,6 +17,8 @@ import {
   getApiKeys,
   deleteApiKey,
   toggleApiKey,
+  updateApiKey,
+  regenerateApiKey,
   getStats,
   initAdmin,
   initApiKeys
@@ -201,7 +203,7 @@ app.post('/api/answer', requireApiKey, async (req, res) => {
       type = body.type || body.questionType || body.category || '';
     }
     
-    console.log(`📥 POST请求 (${req.apiKey?.name || '未知Key'}) - title长度: ${title.length}`);
+    console.log(`📥 POST请求 (${req.apiKey?.alias || '未知Key'}) - title长度: ${title.length}`);
     
     if (!title) {
       return res.json({ code: 0, msg: '题目不能为空' });
@@ -335,7 +337,7 @@ app.get('/api/answer', requireApiKey, async (req, res) => {
       return res.json({ code: 0, msg: '题目不能为空' });
     }
 
-    console.log(`📥 GET请求 (${req.apiKey?.name || '未知Key'}) - title: ${title.substring(0, 50)}...`);
+    console.log(`📥 GET请求 (${req.apiKey?.alias || '未知Key'}) - title: ${title.substring(0, 50)}...`);
 
     let answer;
     let effectiveBaseUrl = '';
@@ -970,34 +972,8 @@ app.post('/api/admin/login', async (req, res) => {
 app.post('/api/admin/change-password', async (req, res) => {
   try {
     const { username, oldPassword, newPassword } = req.body;
-    const decoded = verifyToken(req);
-    
-    if (!decoded && oldPassword) {
-      const result = await changePassword(username, oldPassword, newPassword);
-      res.json(result);
-      return;
-    }
-    
-    if (decoded) {
-      const adminData = initAdmin();
-      const bcrypt = await import('bcryptjs');
-      const passwordMatch = await bcrypt.compare(oldPassword, adminData.password);
-      
-      if (!passwordMatch) {
-        res.json({ success: false, msg: '原密码错误' });
-        return;
-      }
-      
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      adminData.password = hashedPassword;
-      adminData.mustChangePassword = false;
-      const fs = await import('fs');
-      fs.writeFileSync(join(__dirname, '../data/admin.json'), JSON.stringify(adminData, null, 2));
-      
-      res.json({ success: true, msg: '密码修改成功' });
-    } else {
-      res.json({ success: false, msg: '未授权' });
-    }
+    const result = changePassword(username, oldPassword, newPassword);
+    res.json(result);
   } catch (error) {
     console.error('修改密码失败:', error);
     res.json({ success: false, msg: '修改失败' });
@@ -1020,8 +996,8 @@ app.get('/api/admin/apikeys', requireAuth, (req, res) => {
 
 app.post('/api/admin/apikeys', requireAuth, (req, res) => {
   try {
-    const { name } = req.body;
-    const apiKeyData = generateApiKey(name || '未命名');
+    const { alias, expiresAt, maxCalls } = req.body;
+    const apiKeyData = generateApiKey(alias || '未命名', { expiresAt, maxCalls });
     res.json({
       success: true,
       msg: 'API Key生成成功',
@@ -1032,6 +1008,17 @@ app.post('/api/admin/apikeys', requireAuth, (req, res) => {
   }
 });
 
+app.put('/api/admin/apikeys/:key', requireAuth, (req, res) => {
+  try {
+    const decodedKey = decodeURIComponent(req.params.key);
+    const { alias, expiresAt, maxCalls } = req.body;
+    const result = updateApiKey(decodedKey, { alias, expiresAt, maxCalls });
+    res.json(result);
+  } catch (error) {
+    res.json({ success: false, msg: '更新失败' });
+  }
+});
+
 app.post('/api/admin/apikeys/:key/toggle', requireAuth, (req, res) => {
   try {
     const decodedKey = decodeURIComponent(req.params.key);
@@ -1039,6 +1026,16 @@ app.post('/api/admin/apikeys/:key/toggle', requireAuth, (req, res) => {
     res.json(result);
   } catch (error) {
     res.json({ success: false, msg: '操作失败' });
+  }
+});
+
+app.post('/api/admin/apikeys/:key/regenerate', requireAuth, (req, res) => {
+  try {
+    const decodedKey = decodeURIComponent(req.params.key);
+    const result = regenerateApiKey(decodedKey);
+    res.json(result);
+  } catch (error) {
+    res.json({ success: false, msg: '重新生成失败' });
   }
 });
 

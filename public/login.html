@@ -565,6 +565,21 @@
         });
 
         loadTheme();
+        
+        // Check if already logged in
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+            // Verify token is still valid
+            fetch('/api/admin/status', {
+                headers: { 'X-Admin-Token': token }
+            }).then(r => {
+                if (r.ok) {
+                    window.location.href = '/admin.html';
+                } else {
+                    localStorage.removeItem('adminToken');
+                }
+            });
+        }
     </script>
 </body>
 </html>
