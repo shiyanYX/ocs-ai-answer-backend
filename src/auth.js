@@ -233,13 +233,19 @@ export function verifyApiKey(key) {
 }
 
 export function requireApiKey(req, res, next) {
-  const key = req.body?.apiKey || req.query?.apiKey;
+  // OCS client may send text/plain, body will be a string - try JSON.parse
+  let body = req.body;
+  if (typeof body === 'string' && body.trim()) {
+    try { body = JSON.parse(body); } catch (e) { /* keep as string */ }
+  }
+  const key = body?.apiKey || req.query?.apiKey;
 
   if (!key) {
     console.warn('API Key verify failed: no apiKey in request', {
       method: req.method, url: req.url,
       contentType: req.headers?.['content-type'],
       bodyType: typeof req.body,
+      bodyPreview: typeof req.body === 'string' ? req.body.substring(0, 100) : JSON.stringify(req.body).substring(0, 100),
     });
     res.json({ code: 401, msg: 'API Key 无效或已过期' });
     return;
