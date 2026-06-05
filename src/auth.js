@@ -203,25 +203,25 @@ export function verifyApiKey(key) {
 
   const apiKeyData = apiKeys.find(k => k.key === key);
   if (!apiKeyData) {
-    console.warn('⚠️  API Key 验证失败: Key 不匹配', key?.substring(0, 8) + '...');
+    console.warn('API Key verify failed: key not found', key?.substring(0, 8) + '...');
     return null;
   }
 
   if (!apiKeyData.enabled) {
-    console.warn('⚠️  API Key 验证失败: 已禁用', apiKeyData.alias, key?.substring(0, 8) + '...');
+    console.warn('API Key verify failed: disabled', apiKeyData.alias);
     return null;
   }
 
   if (apiKeyData.expiresAt) {
     const expiresAt = new Date(apiKeyData.expiresAt);
     if (expiresAt < new Date()) {
-      console.warn('⚠️  API Key 验证失败: 已过期', apiKeyData.alias, `到期 ${apiKeyData.expiresAt}`);
+      console.warn('API Key verify failed: expired', apiKeyData.alias, apiKeyData.expiresAt);
       return null;
     }
   }
 
   if (apiKeyData.maxCalls !== null && apiKeyData.callCount >= apiKeyData.maxCalls) {
-    console.warn('⚠️  API Key 验证失败: 次数用完', apiKeyData.alias, `${apiKeyData.callCount}/${apiKeyData.maxCalls}`);
+    console.warn('API Key verify failed: quota exhausted', apiKeyData.alias, `${apiKeyData.callCount}/${apiKeyData.maxCalls}`);
     return null;
   }
 
@@ -236,12 +236,10 @@ export function requireApiKey(req, res, next) {
   const key = req.body?.apiKey || req.query?.apiKey;
 
   if (!key) {
-    console.warn('⚠️  API Key 验证失败: 请求未携带 apiKey 字段', {
-      method: req.method,
-      url: req.url,
+    console.warn('API Key verify failed: no apiKey in request', {
+      method: req.method, url: req.url,
       contentType: req.headers?.['content-type'],
       bodyType: typeof req.body,
-      bodyKeys: req.body && typeof req.body === 'object' && !Array.isArray(req.body) ? Object.keys(req.body).join(', ') : 'N/A'
     });
     res.json({ code: 401, msg: 'API Key 无效或已过期' });
     return;
@@ -314,4 +312,35 @@ export function updateApiKey(key, updates) {
   }
 
   saveApiKeys(apiKeys);
-  return { success: tr
+  return { success: true, msg: 'API Key已更新' };
+}
+
+export function regenerateApiKey(key) {
+  const apiKeyData = apiKeys.find(k => k.key === key);
+  if (!apiKeyData) {
+    return { success: false, msg: 'API Key不存在' };
+  }
+
+  const newKey = `ocs_${crypto.randomBytes(24).toString('hex')}`;
+  apiKeyData.key = newKey;
+  saveApiKeys(apiKeys);
+
+  return { success: true, msg: 'API Key已重新生成', key: newKey };
+}
+
+export function getStats() {
+  const totalCalls = apiKeys.reduce((sum, k) => sum + k.callCount, 0);
+  return {
+    totalApiKeys: apiKeys.length,
+    totalCalls,
+    activeKeys: apiKeys.filter(k => k.enabled).length,
+    keys: apiKeys.map(k => ({
+      alias: k.alias,
+      callCount: k.callCount,
+      lastCallAt: k.lastCallAt,
+      enabled: k.enabled
+    }))
+  };
+}
+
+export { apiKeys };
