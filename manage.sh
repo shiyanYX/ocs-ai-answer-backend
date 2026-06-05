@@ -92,28 +92,40 @@ update_server() {
         echo -e "      ${RED}err${NC} 停止失败"
     fi
 
+    echo ""
     echo -e "${YELLOW}[2/4]${NC} 拉取代码..."
+    echo "      ----------------------------------------"
     if git rev-parse --git-dir > /dev/null 2>&1; then
         before=$(git rev-parse HEAD 2>/dev/null)
-        git pull
+        git pull --progress 2>&1 | while IFS= read -r line; do
+            echo "      $line"
+        done
         after=$(git rev-parse HEAD 2>/dev/null)
+        echo "      ----------------------------------------"
         if [ "$before" != "$after" ]; then
-            echo -e "      ${GREEN}ok${NC} 已更新"
+            echo -e "      ${GREEN}ok${NC} 已更新: ${YELLOW}${before:0:7}${NC} -> ${YELLOW}${after:0:7}${NC}"
         else
-            echo -e "      ${GREEN}ok${NC} 已是最新"
+            echo -e "      ${GREEN}ok${NC} 已是最新 (${YELLOW}${before:0:7}${NC})"
         fi
     else
         echo -e "      ${YELLOW}skip${NC} 非 git 仓库"
     fi
 
+    echo ""
     echo -e "${YELLOW}[3/4]${NC} 安装依赖..."
-    npm install
-    if [ $? -eq 0 ]; then
+    echo "      ----------------------------------------"
+    npm install 2>&1 | while IFS= read -r line; do
+        echo "      $line"
+    done
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        echo "      ----------------------------------------"
         echo -e "      ${GREEN}ok${NC} 依赖 OK"
     else
+        echo "      ----------------------------------------"
         echo -e "      ${RED}err${NC} 安装失败"
     fi
 
+    echo ""
     echo -e "${YELLOW}[4/4]${NC} 启动服务..."
     check_dependencies
     npm start &
