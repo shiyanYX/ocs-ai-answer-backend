@@ -106,6 +106,65 @@ restart_server() {
     start_server
 }
 
+# 更新服务
+update_server() {
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}  停止进程 → 拉取代码 → 安装依赖 → 启动${NC}"
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+
+    # 1. 停止服务
+    echo -e "${YELLOW}[1/4]${NC} 停止服务..."
+    pkill -f "node src/index.js" || true
+    sleep 1
+    if ! pgrep -f "node src/index.js" > /dev/null; then
+        echo -e "      ${GREEN}✓${NC} 服务已停止"
+    else
+        echo -e "      ${RED}✗${NC} 无法停止服务"
+    fi
+
+    # 2. 拉取最新代码
+    echo -e "${YELLOW}[2/4]${NC} 拉取最新代码..."
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        before=$(git rev-parse HEAD 2>/dev/null)
+        git pull 2>&1 | while IFS= read -r line; do echo "      $line"; done
+        after=$(git rev-parse HEAD 2>/dev/null)
+        if [ "$before" != "$after" ]; then
+            echo -e "      ${GREEN}✓${NC} 代码已更新"
+        else
+            echo -e "      ${GREEN}✓${NC} 已是最新版本"
+        fi
+    else
+        echo -e "      ${YELLOW}⚠${NC} 非 git 仓库，跳过拉取"
+    fi
+
+    # 3. 安装依赖
+    echo -e "${YELLOW}[3/4]${NC} 检查并安装依赖..."
+    npm install
+    if [ $? -eq 0 ]; then
+        echo -e "      ${GREEN}✓${NC} 依赖安装完成"
+    else
+        echo -e "      ${RED}✗${NC} 依赖安装失败"
+    fi
+
+    # 4. 启动服务
+    echo -e "${YELLOW}[4/4]${NC} 启动服务..."
+    check_dependencies
+    npm start &
+    SERVER_PID=$!
+    sleep 2
+    if ps -p $SERVER_PID > /dev/null; then
+        echo -e "      ${GREEN}✓${NC} 服务启动成功"
+    else
+        echo -e "      ${RED}✗${NC} 服务启动失败"
+    fi
+
+    echo ""
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${GREEN}  更新流程完成${NC}"
+    echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+}
+
 # 检查状态
 check_status() {
     echo -e "${BLUE}检查服务状态...${NC}"
@@ -150,121 +209,4 @@ generate_ocs_config() {
 // 基础配置（GET 请求）
 const aiSearchConfig = {
   url: "http://localhost:3000/api/search",
-  name: "AI智能搜题",
-  homepage: "http://localhost:3000",
-  method: "get",
-  contentType: "json",
-  data: {
-    title: "${title}",
-    options: "${options}",
-    type: "${type}"
-  },
-  handler: `
-    return (res) => {
-      if (res.code === 1 && res.results && res.results.length > 0) {
-        return [res.results[0].question, res.results[0].answer];
-      }
-      return undefined;
-    }
-  `
-};
-
-// POST 请求配置
-const aiSearchConfigPost = {
-  url: "http://localhost:3000/api/answer",
-  name: "AI智能搜题(POST)",
-  homepage: "http://localhost:3000",
-  method: "post",
-  contentType: "json",
-  data: {
-    title: "${title}",
-    options: "${options}",
-    type: "${type}"
-  },
-  handler: `
-    return (res) => {
-      if (res.code === 1) {
-        return [res.title, res.answer];
-      }
-      return undefined;
-    }
-  `
-};
-
-// 导出配置
-module.exports = {
-  aiSearchConfig,
-  aiSearchConfigPost
-};
-EOF
-
-    echo -e "${GREEN}✓ OCS 配置已生成: ocs-config-example.js${NC}"
-    echo -e "${YELLOW}查看配置: cat ocs-config-example.js${NC}"
-}
-
-# 显示帮助
-show_help() {
-    cat << EOF
-OCS AI 搜题后端管理脚本
-============================
-
-用法: $0 [命令]
-
-命令:
-    start       启动服务
-    stop        停止服务
-    restart     重启服务
-    status      检查服务状态
-    web         打开 Web 配置界面
-    logs        查看日志
-    config      生成 OCS 配置代码
-    help        显示帮助信息
-
-示例:
-    $0 start        # 启动服务
-    $0 status       # 检查状态
-    $0 web          # 打开 Web 界面
-
-详细文档:
-    README.md        # 完整使用说明
-    OCS-CONFIG.md   # OCS 配置教程
-
-EOF
-}
-
-# 主程序
-case "${1:-start}" in
-    start)
-        start_server
-        ;;
-    stop)
-        stop_server
-        ;;
-    restart)
-        restart_server
-        ;;
-    status)
-        check_status
-        ;;
-    web)
-        check_status
-        if [ $? -eq 0 ]; then
-            open_web
-        fi
-        ;;
-    logs)
-        view_logs
-        ;;
-    config)
-        generate_ocs_config
-        ;;
-    help|--help|-h)
-        show_help
-        ;;
-    *)
-        echo -e "${RED}错误: 未知命令 '$1'${NC}"
-        echo ""
-        show_help
-        exit 1
-        ;;
-esac
+ 
